@@ -1,0 +1,9 @@
+in init stage what happens if i get a non integer char? is it the same as scaf failing?
+do we need to support EOF in the middle of a string?
+not enough numbers crash program (set 1 2\ hint 1)
+
+make sure all fixed values are indeed fixed upon game generation
+
+make sure that after puzzle is solved, all commands become invalid except exit and restart.
+
+add prints for validate functions
