@@ -1,0 +1,112 @@
+markerrors - boolean
+markerrors - function
+	if markerros ==1 or in edit mode
+	after every move check the validity of all cells (or all cells of that number)
+	mark as erroneus only if not fixed
+currentBoard - board
+gameMode - init/edit/solve
+
+
+undo/redo -
+history - doubly linked list of boards
+insertBoard - function
+	delete the future nodes with clearFuture and then
+	insert a board after the current poiner
+	when game starts list must be empty so update only after move is done
+clearFuture - function
+	delete all nodes after the current pointer
+
+
+solve X- function
+	change state
+	enter solve mode with the sudoku in file X
+edit X- function
+	change state
+	enter edit mode with the sudoku in file X
+
+edit mode-
+generate X Y - function
+	only available if board empty
+	randomly choose X cells and fill legally
+	solve and then clear random Y cells
+	if does not succed try again for 1000 times
+
+solve mode-
+mark_errors x - function
+	set markerrors to x
+
+both edit and solve-
+print board - function
+	prints the board
+set X Y Z- function
+	set <X,Y> to Z , check validity of x y z
+	after successful set, call markerrors if needed
+	if last cell, validate
+validate - function
+	first check for errors
+	then validate if exists solution
+undo - function
+	set pointer back and update
+	print the change done
+redo - function
+	set pointer forward and update
+	print the change done
+save X - function
+	
+	
+	
+
+getCommand - function
+	may treat any input beyond 256 chars as invalid
+printCommanError - function
+
+
+game loop:
+	printTitle
+	getCommand
+	setMode
+
+update parser to parse the new commands
+update print
+change isLegalSet to check validity
+
+
+
+
+
+parser-
+
+solver -
+validate
+generate solution X Y
+autofill
+num_solution
+
+IO -
+save x
+load x
+
+ActionList - list of moves done 
+getState - returns current state
+moveForward
+moveBackward
+insertAction
+clearFromPointer 
+clearAll - returns first state
+
+main -
+start the game.
+then read command loop:
+	first check if the command is legal for the mode
+	then checks what the command is and acts on it
+
+game -
+checkCommandValidity
+reset
+undo
+redo
+exit
+
+
+
+	
