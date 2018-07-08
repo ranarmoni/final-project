@@ -8,8 +8,9 @@
 #ifndef GAME_H_
 #define GAME_H_
 
-#define TABLE_SIZE 9
-#define BLOCK_SIZE 3
+extern int BLOCK_SIZE_N;
+extern int BLOCK_SIZE_M;
+extern int TABLE_SIZE; /* =N*M */
 
 /*#include "parser.h"*/
 
