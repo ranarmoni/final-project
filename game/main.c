@@ -35,7 +35,7 @@ int main(){
 			return 1;
 		}
 		else{ /* invalid command or set/hint/validate after puzzle solved */
-			printf("Error: invalid command\n");
+			printf("ERROR: invalid command\n");
 
 		}
 

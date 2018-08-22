@@ -9,11 +9,6 @@
 #define PARSER_H_
 
 /*
- * read the amount of fixed cells 0-80
- */
-int readFixedAmnt();
-
-/*
  * read command from user an call the appropriate game function
  */
 int * readCommand();

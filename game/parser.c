@@ -5,47 +5,48 @@
  *      Author: hp envy
  */
 #include <stdio.h>
+#include "game.h"
 #include "parser.h"
 #include <string.h>
 #include <stdlib.h>
 
+#define TABLE_SIZE 9
+char address[];
+
 int * readSpecificCommand(int type, int varAmnt , char *delim);
 
-/*
- * read the amount of fixed cells 0-80
- */
-int readFixedAmnt(){
-	int amnt = -1;
-	while(amnt<0 || amnt>80 ){
-		printf("Please enter the number of cells to fill [0-80]:\n");
-		if(scanf("%d", &amnt)==0){
-			printf("Error: scanf has failed\n");
-			exit(0);
-		}
-		if(feof(stdin))
-			return -1;
-		if(amnt<0 || amnt>80)
-			printf("Error: Invalid number of cells to fill (should be between 0 and 80)\n");
-	}
-	return amnt;
+int getEmptyCells(){
+	return 1;
 }
 
 /*
  * read command from user and return an int array representation of it
  */
 int * readCommand(){
-	char 	*line = (char*)calloc(1024,sizeof(char)),
-			*token, *delim = " \t\r\n";
+	char 	*line = (char*)calloc(258,sizeof(char)),
+			*token="", *delim = " \t\r\n",dummy[256];
 	int i;
 	int *command;
-	int commands[5][2] = {
-		{1,3} ,
-		{2,2} ,
-		{3,0} ,
+	int commands[15][2] = {
+		{1,0} ,
+		{2,0} ,
+		{3,1} ,
 		{4,0} ,
-		{5,0}
+		{5,3} ,
+		{6,0} ,
+		{7,2} ,
+		{8,0} ,
+		{9,0} ,
+		{10,0},
+		{11,2},
+		{12,0},
+		{13,0},
+		{14,0},
+		{15,0}
 	};
-	char commandNames[5][10] = {"set","hint","validate","restart","exit"};
+	char commandNames[15][15] = {"solve","edit","mark_errors","print_board","set",
+			"validate","generate","undo","redo","save","hint","num_solutions","autofill","reset","exit"},
+			c;
 
 	/* check if calloc failed */
 	if(line == 0){
@@ -54,30 +55,36 @@ int * readCommand(){
 	}
 
 	while(!feof(stdin)){
-		fgets(line,1024,stdin);
+		printf("Enter your command:\n");
+		/* empty line */
+		fgets(line, 258, stdin);
+		if (sscanf(line,"%s",dummy) <1)
+			continue;
+		if(strlen(line)>256){
+			while((c = getc(stdin)) != '\n' && c != EOF);  /* throw away all the left chars over the 256 chars allowed */
+			printf("ERROR: invalid command\n");
+			continue;
+		}
+
 		token = strtok(line, delim);
 
-		/* empty line */
-		if (token == NULL)
-			continue;
-
-
-
-		/* process the 5 command types */
-		for(i=0; i<5; ++i){
+		/* process the 15 command types */
+		for(i=0; i<15; ++i){
 			if(strcmp(token, commandNames[i]) == 0){
 				command = readSpecificCommand(commands[i][0],commands[i][1], delim);
 				if (command == NULL){
+					free(command);
 					break;
 				}
 				free(line);
 				return command;
 			}
 		}
-		printf("Error: invalid command\n");
+		printf("ERROR: invalid command\n");
 	}
+	/* if EOF reached than output exit command */
 	command = (int*)calloc(4,sizeof(int));
-	command[0] = 5;
+	command[0] = 15;
 	free(line);
 	return command;
 }
@@ -93,19 +100,57 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 		printf("Error: calloc has failed\n");
 		exit(0);
 	}
-
 	command[0] = type;
+	if(type==1 || type==2 || type ==10){
+		token = strtok(NULL, delim);
+		if(token == NULL){
+			if (type==2)
+				strcpy(address,"");
+			else
+				return NULL;
+		}
+		else
+			strcpy(address, token);
+	}
 	/* read x y z */
 	for(i=1 ; i<=varAmnt; ++i){
 		token = strtok(NULL, delim);
-		if(token == NULL)
+		if(token == NULL){
 			return NULL;
-		command[i] = ((int)strtol(token, NULL, 10))-1;
-		if(command[i] == -1){
-			return NULL;
+		}
+		command[i] = ((int)strtol(token, NULL, 10));
+
+		/* check if parameters are legal for the command type  */
+		if(type==3 && !(command[i] == 0 || command[i] == 1)){
+			printf("Error: the value should be 0 or 1\n");
+			return -1;
+		}
+		if((type==5 || type==11) && (command[i]>TABLE_SIZE || command[i]<0)){
+			printf("Error: value not in range 0-%d\n",TABLE_SIZE);
+			return -1;
+		}
+		if(type==7){
+			if (getEmptyCells()==0){
+				printf("Error: board is not empty]n");
+				return -1;
+			}
+			if (command[i]<0 || command[i]>getEmptyCells() ){
+				printf("Error: value not in range 0-%d\n",getEmptyCells());
+				return -1;
+			}
 		}
 	}
 	return command;
+}
+
+int main(){
+	int *arr;
+	while(1){
+		arr = readCommand();
+		printf("[%d,%d,%d,%d]\n",arr[0],arr[1],arr[2],arr[3]);
+		printf("address: %s\n",address);
+	}
+	return 1;
 }
 
 

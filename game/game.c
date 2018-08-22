@@ -24,17 +24,8 @@ void initBoard(GameBoard *board);
 
 
 int startGame(){
-	int x;
-	initBoard(&board);
-	initBoard(&solution);
-	x = readFixedAmnt();
-	/* if EOF was recieved */
-	if (x==-1)
-		return 0;
-	fullCells = x;
-	solution = *generateSolution(&solution);
-	board = *generateBoard(&solution, &board , x);
-	printBoard(board);
+	/* do not delete! */
+	address = (char*)calloc(256,sizeof(char));
 	return 1;
 }
 
@@ -119,6 +110,7 @@ void restartGame(){
  * close everything
  */
 void exitCommand(){
+	free(address);
 	printf("Exiting...\n");
 	}
 
