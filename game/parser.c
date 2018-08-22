@@ -9,6 +9,11 @@
 #include "parser.h"
 #include <string.h>
 #include <stdlib.h>
+#include<ctype.h>
+
+int BLOCK_SIZE_N = 3;
+int BLOCK_SIZE_M = 3;
+int TABLE_SIZE = 9;
 
 char address[];
 
@@ -57,9 +62,9 @@ int * readCommand(){
 		printf("Enter your command:\n");
 		/* empty line */
 		fgets(line, 258, stdin);
-		if (sscanf(line,"%s",dummy) <1)
-			printf("Enter your command:\n");
+		if (sscanf(line,"%s",dummy) <1){ /* stops on spaces as fgets keeps reading them */
 			continue;
+		}
 		if(strlen(line)>256){
 			while((c = getc(stdin)) != '\n' && c != EOF);  /* throw away all the left chars over the 256 chars allowed */
 			printf("ERROR: invalid command\n");
@@ -93,7 +98,7 @@ int * readCommand(){
 
 
 int * readSpecificCommand(int type, int varAmnt , char *delim){
-	int i;
+	int i, j, gameStatew;
 	int *command = (int*)calloc(4,sizeof(int));
 	char *token;
 
@@ -101,6 +106,13 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 	if(command == 0){
 		printf("Error: calloc has failed\n");
 		exit(0);
+	}
+	/* check if fucntion type legal */
+	if ((gameState == 0 && type != 1 && type!=2 && type != 15) ||
+			(gameState == 1 && type == 7) ||
+			(gameState == 2 && (type == 13 || type == 11 || type == 3))){
+		command[0] = 0;
+		return command;
 	}
 	command[0] = type;
 	if(type==1 || type==2 || type ==10){
@@ -123,7 +135,17 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 			command[0] = 0;
 			return command;
 		}
-		command[i] = ((int)strtol(token, NULL, 10));
+		/* check if int */
+		j = 0;
+		while(token[j] != '\0'){
+			if(!isdigit(token[j])){
+				command[0] = 0;
+				return command;
+			}
+			j++;
+		}
+
+		command[i] = atoi(token);
 
 		/* check if parameters are legal for the command type  */
 		if(type==3 && !(command[i] == 0 || command[i] == 1)){
