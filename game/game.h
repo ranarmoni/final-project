@@ -7,11 +7,10 @@
 
 #ifndef GAME_H_
 #define GAME_H_
-/*
+
 extern int BLOCK_SIZE_N;
 extern int BLOCK_SIZE_M;
-extern int TABLE_SIZE; */ /* =N*M */
-
+extern int TABLE_SIZE; /* =N*M */
 extern char address[256];
 
 /*#include "parser.h"*/
@@ -71,5 +70,6 @@ int isLegalSet(GameBoard *board ,int z, int x, int y);
  * get amount of empty cells in the current boardד
  */
 int getEmptyCells();
+
 
 #endif /* GAME_H_ */

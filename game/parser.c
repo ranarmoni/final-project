@@ -10,7 +10,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define TABLE_SIZE 9
 char address[];
 
 int * readSpecificCommand(int type, int varAmnt , char *delim);
@@ -25,7 +24,7 @@ int getEmptyCells(){
 int * readCommand(){
 	char 	*line = (char*)calloc(258,sizeof(char)),
 			*token="", *delim = " \t\r\n",dummy[256];
-	int i;
+	int i, errState = 0;
 	int *command;
 	int commands[15][2] = {
 		{1,0} ,
@@ -59,6 +58,7 @@ int * readCommand(){
 		/* empty line */
 		fgets(line, 258, stdin);
 		if (sscanf(line,"%s",dummy) <1)
+			printf("Enter your command:\n");
 			continue;
 		if(strlen(line)>256){
 			while((c = getc(stdin)) != '\n' && c != EOF);  /* throw away all the left chars over the 256 chars allowed */
@@ -72,7 +72,8 @@ int * readCommand(){
 		for(i=0; i<15; ++i){
 			if(strcmp(token, commandNames[i]) == 0){
 				command = readSpecificCommand(commands[i][0],commands[i][1], delim);
-				if (command == NULL){
+				if (command[0] < 1){
+					errState = command[0];
 					free(command);
 					break;
 				}
@@ -80,7 +81,8 @@ int * readCommand(){
 				return command;
 			}
 		}
-		printf("ERROR: invalid command\n");
+		if(errState == 0)
+			printf("ERROR: invalid command\n");
 	}
 	/* if EOF reached than output exit command */
 	command = (int*)calloc(4,sizeof(int));
@@ -106,8 +108,10 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 		if(token == NULL){
 			if (type==2)
 				strcpy(address,"");
-			else
-				return NULL;
+			else{
+				command[0] = 0;
+				return command;
+			}
 		}
 		else
 			strcpy(address, token);
@@ -116,27 +120,34 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 	for(i=1 ; i<=varAmnt; ++i){
 		token = strtok(NULL, delim);
 		if(token == NULL){
-			return NULL;
+			command[0] = 0;
+			return command;
 		}
 		command[i] = ((int)strtol(token, NULL, 10));
 
 		/* check if parameters are legal for the command type  */
 		if(type==3 && !(command[i] == 0 || command[i] == 1)){
 			printf("Error: the value should be 0 or 1\n");
-			return -1;
+			command[0] = -1;
+			return command;
 		}
-		if((type==5 || type==11) && (command[i]>TABLE_SIZE || command[i]<0)){
-			printf("Error: value not in range 0-%d\n",TABLE_SIZE);
-			return -1;
+		if((type==5 || type==11) && (command[i]>TABLE_SIZE || command[i]<1)){
+			if(i!=3 || command[i]<0){
+				printf("Error: value not in range 0-%d\n",TABLE_SIZE);
+				command[0] = -1;
+				return command;
+			}
 		}
 		if(type==7){
 			if (getEmptyCells()==0){
 				printf("Error: board is not empty]n");
-				return -1;
+				command[0] = -1;
+				return command;
 			}
 			if (command[i]<0 || command[i]>getEmptyCells() ){
 				printf("Error: value not in range 0-%d\n",getEmptyCells());
-				return -1;
+				command[0] = -1;
+				return command;
 			}
 		}
 	}

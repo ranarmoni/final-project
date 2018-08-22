@@ -6,6 +6,10 @@
 #define true 1
 
 int main(){
+	/* do first */
+	int BLOCK_SIZE_N = 3;
+	int BLOCK_SIZE_M = 3;
+	int TABLE_SIZE = 9;
 	int *command;
 	if(startGame() == 0){
 		exitCommand();
