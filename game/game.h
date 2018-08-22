@@ -11,11 +11,13 @@
 extern int BLOCK_SIZE_N;
 extern int BLOCK_SIZE_M;
 extern int TABLE_SIZE; /* =N*M */
+extern int mark_errors;
+extern game_mode=0; //0-init, 1-solve, 2-edit
 
 /*#include "parser.h"*/
 
 typedef struct gameBoardStruct{
-	int boardMatrix[TABLE_SIZE][TABLE_SIZE][2];
+	int boardMatrix[TABLE_SIZE][TABLE_SIZE][2]; //boardMatrix[x][y][1]==1 if fixed, 2 if error, 0 else.
 } GameBoard;
 
 
