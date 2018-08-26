@@ -4,14 +4,13 @@
 
 
 struct Node {
-	GameBoard data;
+	GameBoard *board;
+	char message*;	
 	struct Node* next;
 	struct Node* prev;
 };
 
-struct ActionList {
-	struct Node* curr;
-};
+extern Node* curr; 
 
 typedef struct Node node;
 typedef struct ActionList ActionList;
