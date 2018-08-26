@@ -16,6 +16,12 @@ extern char address[256];
 
 /*#include "parser.h"*/
 
+
+int gameMode; //0=init, 1=solve, 2=edit
+int markErrors;
+
+
+
 typedef struct gameBoardStruct{
 	int* board;
 } GameBoard;
