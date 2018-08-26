@@ -263,6 +263,8 @@ int isGameOver(){
  * if func=1, function prints diffs for the undo funtion.
  * if func=2 function prints diffs for the redo funtion.
  */
+
+/*
 void deepCopy(GameBoard *to, GameBoard *from, int func){
 	int i,j;
 	char *func_name;
@@ -281,6 +283,8 @@ void deepCopy(GameBoard *to, GameBoard *from, int func){
 
 	}
 }
+
+*/
 
 void initBoard(GameBoard *board){
 	int i,j;

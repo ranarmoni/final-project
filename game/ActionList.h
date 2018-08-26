@@ -5,12 +5,14 @@
 
 struct Node {
 	GameBoard *board;
-	char message*;	
 	struct Node* next;
 	struct Node* prev;
 };
 
-extern Node* curr; 
+struct ActionList{
+	Node *curr;
+	Node *first;
+};
 
 typedef struct Node node;
 typedef struct ActionList ActionList;
