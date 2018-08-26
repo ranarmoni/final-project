@@ -8,6 +8,6 @@
 #ifndef MAINAUX_H_
 #define MAINAUX_H_
 
-
+int isContainingError(GameBoard board);
 
 #endif /* MAINAUX_H_ */
