@@ -37,7 +37,7 @@ int ILPsolve(GameBoard board, GameBoard solutionBoard){
 	for (i = 0; i < nm; i++) {
 	    for (j = 0; j < nm; j++) {
 	    	for (v = 0; v < nm; v++) {
-	    		if (board.board[calcIndex(i,j,0,4,3)]-1 == v){
+	    		if (board.board[calcIndex(i,j,0,nm,3)]-1 == v){
 	    			initVals[calcIndex(i,j,v,nm,nm)] = 1.0;
 	    			printf("found %d in index %d,%d\n",v,i,j);
 	    		}
@@ -115,11 +115,11 @@ int ILPsolve(GameBoard board, GameBoard solutionBoard){
 	/* block constraint */
 
 	for (v = 0; v < nm; v++) {
-	    for (block_i = 0; block_i < m; block_i++) {
-	    	for (block_j = 0; block_j < n; block_j++) {
+	    for (block_i = 0; block_i < n; block_i++) {
+	    	for (block_j = 0; block_j < m; block_j++) {
 	    		count = 0;
-	    		for (i = block_i*n; i < (block_i+1)*n; i++) {
-	    			for (j = block_j*m; j < (block_j+1)*m; j++) {
+	    		for (i = block_i*m; i < (block_i+1)*m; i++) {
+	    			for (j = block_j*n; j < (block_j+1)*n; j++) {
 	    				ind[count] = calcIndex(i,j,v,nm,nm);
 	    				val[count] = 1.0;
 	    				count++;
@@ -164,10 +164,10 @@ int ILPsolve(GameBoard board, GameBoard solutionBoard){
     		  printf("ERROR %d GRBgetdblattrarray(): %s\n", error, GRBgeterrormsg(env));
     		  return -1;
     	  }
-    	for (j = 0; j < nm; j++) {
-    	    for (i = 0; i < nm; i++) {
+    	for (i = 0; i < nm; i++) {
+    	    for (j = 0; j < nm; j++) {
     	    	for (v = 0; v < nm; v++) {
-    	    		if (sol[calcIndex(j,i,v,nm,nm)] != 0){
+    	    		if (sol[calcIndex(i,j,v,nm,nm)] == 1){
     	    			solutionBoard.board[calcIndex(i,j,0,nm,3)] = v+1;
     	    			printf("%d in index %d,%d which is %d\n", v+1, i,j, calcIndex(i,j,0,nm,3));
     	    		}
