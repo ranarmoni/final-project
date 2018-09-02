@@ -9,7 +9,7 @@
 #include "parser.h"
 #include <string.h>
 #include <stdlib.h>
-#include<ctype.h>
+#include <ctype.h>
 
 int BLOCK_SIZE_N = 3;
 int BLOCK_SIZE_M = 3;

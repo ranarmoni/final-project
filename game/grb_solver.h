@@ -8,7 +8,9 @@
 #ifndef GRB_SOLVER_H_
 #define GRB_SOLVER_H_
 
-GameBoard ILPsolve(GameBoard board);
+
+int ILPsolve(GameBoard board, GameBoard solutionBoard);
+
 
 
 #endif /* GRB_SOLVER_H_ */

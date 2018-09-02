@@ -10,4 +10,13 @@
 
 int isContainingError(GameBoard board);
 
+int calcIndex(int x, int y, int z,int d1, int d2);
+
+
+/* developer methods  */
+
+void printIntArr(int* arr, int arrSize);
+
+void printDblArr(double* arr, int arrSize);
+
 #endif /* MAINAUX_H_ */
