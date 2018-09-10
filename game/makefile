@@ -11,11 +11,13 @@ $(EXEC): $(OBJS)
 #grb_solver.o: grb_solver.c game.h MainAux.o 
 #	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
 	
+fileIO.o: fileIO.c fileIO.h game.h MainAux.o
+	$(CC) $(COMP_FLAG) -c $*.c	
+
 MainAux.o: MainAux.c MainAux.h
 	$(CC) $(COMP_FLAG) -c $*.c
 	
-fileIO.o: fileIO.c fileIO.h game.h
-	$(CC) $(COMP_FLAG) -c $*.c
+
 	
 clean:
 	rm -f $(OBJS) $(EXEC)

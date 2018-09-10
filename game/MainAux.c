@@ -5,6 +5,8 @@
  *      Author: hp envy
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "game.h"
 #include "MainAux.h"
 /* 0<=z<n */
