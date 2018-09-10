@@ -9,7 +9,7 @@
 #include "parser.h"
 #include <string.h>
 #include <stdlib.h>
-#include<ctype.h>
+#include <ctype.h>
 
 int BLOCK_SIZE_N = 3;
 int BLOCK_SIZE_M = 3;
@@ -18,6 +18,8 @@ int TABLE_SIZE = 9;
 char address[];
 
 int * readSpecificCommand(int type, int varAmnt , char *delim);
+
+int checkInt(char*);
 
 int getEmptyCells(){
 	return 1;
@@ -73,7 +75,7 @@ int * readCommand(){
 
 		token = strtok(line, delim);
 
-		/* process the 15 command types */
+		/* process the 15 command types and read the right one with the specific command func */
 		for(i=0; i<15; ++i){
 			if(strcmp(token, commandNames[i]) == 0){
 				command = readSpecificCommand(commands[i][0],commands[i][1], delim);
@@ -98,7 +100,7 @@ int * readCommand(){
 
 
 int * readSpecificCommand(int type, int varAmnt , char *delim){
-	int i, j, gameStatew;
+	int i, j, gameState, isInt;
 	int *command = (int*)calloc(4,sizeof(int));
 	char *token;
 
@@ -136,24 +138,17 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 			return command;
 		}
 		/* check if int */
-		j = 0;
-		while(token[j] != '\0'){
-			if(!isdigit(token[j])){
-				command[0] = 0;
-				return command;
-			}
-			j++;
-		}
+		isInt = checkInt(token);
 
 		command[i] = atoi(token);
 
 		/* check if parameters are legal for the command type  */
-		if(type==3 && !(command[i] == 0 || command[i] == 1)){
+		if(type==3 && (!(command[i] == 0 || command[i] == 1) || !isInt) ){
 			printf("Error: the value should be 0 or 1\n");
 			command[0] = -1;
 			return command;
 		}
-		if((type==5 || type==11) && (command[i]>TABLE_SIZE || command[i]<1)){
+		if(type==5 && ((command[i]>TABLE_SIZE || command[i]<1) || !isInt)){
 			if(i!=3 || command[i]<0){
 				printf("Error: value not in range 0-%d\n",TABLE_SIZE);
 				command[0] = -1;
@@ -161,12 +156,12 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 			}
 		}
 		if(type==7){
-			if (getEmptyCells()==0){
-				printf("Error: board is not empty]n");
+			if (getEmptyCells()!= 0){
+				printf("Error: board is not empty\n");
 				command[0] = -1;
 				return command;
 			}
-			if (command[i]<0 || command[i]>getEmptyCells() ){
+			if (command[i]<0 || command[i]>(BLOCK_SIZE_N*BLOCK_SIZE_M) ){
 				printf("Error: value not in range 0-%d\n",getEmptyCells());
 				command[0] = -1;
 				return command;
@@ -174,6 +169,17 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 		}
 	}
 	return command;
+}
+
+int checkInt(char* token){
+	int j = 0;
+	while(token[j] != '\0'){
+		if(!isdigit(token[j])){
+			return 0;
+		}
+		j++;
+	}
+	return 1;
 }
 
 int main(){
