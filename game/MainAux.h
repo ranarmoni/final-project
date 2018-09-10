@@ -4,6 +4,9 @@
  *  Created on: 17 May 2018
  *      Author: hp envy
  */
+#include "game.h"
+
+
 
 #ifndef MAINAUX_H_
 #define MAINAUX_H_

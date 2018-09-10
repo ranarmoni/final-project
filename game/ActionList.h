@@ -1,6 +1,6 @@
 
 
-
+#include "game.h"
 
 
 struct Node {
@@ -9,13 +9,24 @@ struct Node {
 	struct Node* prev;
 };
 
+typedef struct Node Node;
+
 struct ActionList{
 	Node *curr;
 	Node *first;
 };
 
-typedef struct Node node;
+
 typedef struct ActionList ActionList;
 
 
+
+
+int undo(ActionList *list);
+int redo(ActionList *list);
+int addNewNode(ActionList *list);
+void reset(ActionList *list);
+void initList(ActionList* list);
+void copyBoard(GameBoard *oldBoard, GameBoard *newBoard);
+void freeList(ActionList *list);
 
