@@ -11,6 +11,8 @@
 #ifndef MAINAUX_H_
 #define MAINAUX_H_
 
+#include "game.h"
+
 int isContainingError(GameBoard board);
 
 int calcIndex(int x, int y, int z,int d1, int d2);
