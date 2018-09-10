@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "solver.h"
 #include "parser.h"
+#include "ActionList.h"
+#include "MainAux.h"
 
 
 GameBoard board;
@@ -15,34 +17,42 @@ int fullCells;
 /*
  * checks whether cell (x,y) is fixed.
  */
-int isFixed(int x,int y);
+int isFixed(GameBoard *board,int x,int y);
 /*
  * creates a deep copy of the game board.
  */
 void deepCopy(GameBoard *to, GameBoard *from);
 void initBoard(GameBoard *board);
-
+int boardHasError(GameBoard *board);
+int hasError(GameBoard *board ,int x, int y);
 
 
 int startGame(){
-	/* do not delete! */
-	address = (char*)calloc(256,sizeof(char));
+
 	return 1;
 }
 
 
-int setCell(int z, int x, int y){
-	if(isFixed(x,y)){
+int setCell(int z, int x, int y, ActionList *list){
+	addNewNode(list);
+	if(isFixed(list->curr->board,x,y)){
 		printf("Error: cell is fixed\n");
 		return 0;
 	}
 
-	board.boardMatrix[x][y][0]=z+1;
-	markErrors(&board,z+1,x,y);
+	list->curr->board->board[calcIndex(x,y,0,TABLE_SIZE,3)]=z+1;
+	/*markErrors(&board,z+1,x,y);*/
 	fullCells++;
-	printBoard(board);
-	if(isGameOver())
+	printBoard(list->curr->board);
+	if(fullCells==TABLE_SIZE){
+		if(boardHasError(list->curr->board)){
+			printf("Puzzle solution erroneous\n");
+			return 1;
+		}
 		printf("Puzzle solved successfully\n");
+		gameMode=0;
+	}
+
 	return 1;
 }
 
@@ -78,33 +88,33 @@ int boardHasError(GameBoard *board){
 	int i,j,N=BLOCK_SIZE_N+BLOCK_SIZE_M;
 	for(i=0;i<N;i++)
 		for(j=0;j<N;j++)
-			if hasError(board,i,j)
+			if(hasError(board,i,j))
 				return 1;
 	return 0;
 }
 
 
 int hasError(GameBoard *board ,int x, int y){
-	int i,j,currRow,currCol;
-	z=board->boardMatrix[x][y][0];
+	int i,j,currRow,currCol,z;
+	z=board->board[calcIndex(x,y,0,TABLE_SIZE,3)];
 
 
 	for(currRow=0;currRow<BLOCK_SIZE_M;++currRow) /*scan relevant column for collisions*/
-		if(z==board->boardMatrix[currRow][y][0])
+		if(z==board->board[calcIndex(currRow,y,0,TABLE_SIZE,3)])
 			return 1;
 
 	for(currCol=0;currCol<BLOCK_SIZE_N;++currCol)/*scan relevant row for collisions*/
-			if(z==board->boardMatrix[x][currCol][0])
+			if(z==board->board[calcIndex(x,currCol,0,TABLE_SIZE,3)])
 				return 1;
 
 
-	// check again if rows/cols & x/y match
+	/* check again if rows/cols & x/y match */
 	currRow=x-(x%BLOCK_SIZE_N);
 	currCol=y-(y%BLOCK_SIZE_M);
 
 	for(i=0;i<BLOCK_SIZE_N;i++)/*scan relevant block for collisions, starting top left corner.*/
 		for(j=0;j<BLOCK_SIZE_M;j++)
-			if(z==board->boardMatrix[currRow+i][currCol+j][0])
+			if(z==board->board[calcIndex(currRow+i,currCol+j,0,TABLE_SIZE,3)])
 				return 1;
 
 	return 0;
@@ -155,19 +165,20 @@ int markErrors(GameBoard *board ,int z, int x, int y){
 
 */
 
-int isFixed(int x, int y){
-	return board.boardMatrix[x][y][1]==1;
+int isFixed(GameBoard *board, int x, int y){
+	return (int)(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==1);
 }
 
-int isError(int x, int y){
-	return board.boardMatrix[x][y][1]==2;
+int isError(GameBoard *board,int x, int y){
+	return (int)(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==2);
 }
 
-
+/*
 void hintCell(int x,int y){
 	int hint = solution.boardMatrix[x][y][0];
 	printf("Hint: set cell to %d \n",hint);
 }
+*/
 
 
 void validateBoard(){
@@ -200,9 +211,10 @@ void exitCommand(){
 	}
 
 int show_errors(){
-	if(mark_errors==0&game_mode==1)
+	if(markErrors==0&gameMode==1){
 		return 0;
-	else{ return 1}
+	}
+	return 1;
 }
 
 /*
@@ -211,7 +223,8 @@ int show_errors(){
 
 
 void printSeperatingDashes(){
-	for(int i=0;i<(4*(BLOCK_SIZE_N+BLOCK_SIZE_M)+BLOCK_SIZE_N+1);i++)
+	int i;
+	for(i=0;i<(4*(BLOCK_SIZE_N)+BLOCK_SIZE_M+1);i++)
 		printf("-");
 	printf("\n");
 }
@@ -223,7 +236,7 @@ void printSeperatingDashes(){
  */
 
 
-void printBoard(GameBoard board){
+void printBoard(GameBoard *board){
 	int i, j, k, l, x=0, y=0;
 
 	for(k=0; k<BLOCK_SIZE_N; k++){
@@ -231,18 +244,18 @@ void printBoard(GameBoard board){
 		for(l=0; l<BLOCK_SIZE_N; l++){
 		for(i=0; i<BLOCK_SIZE_M; i++){
 				printf("|");
-				for(j=0; j<BLOCK_SIZE; j++){
+				for(j=0; j<BLOCK_SIZE_N; j++){
 
-					if(board.boardMatrix[x][y][1]==1)
+					if(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==1)
 						printf(".");
-					if(show_errors() && hasError(&board,x,y))
+					if(show_errors() && hasError(board,x,y))
 						printf("*");
 					else
 						printf(" ");
-					if(board.boardMatrix[x][y][0]==0)
+					if(board->board[calcIndex(x,y,0,TABLE_SIZE,3)]==0)
 						printf(" ");
 					else
-						printf("%2d",board.boardMatrix[x][y][0]);
+						printf("%2d",board->board[calcIndex(x,y,1,TABLE_SIZE,3)]);
 					y++;
 				}
 							}
@@ -285,7 +298,7 @@ void deepCopy(GameBoard *to, GameBoard *from, int func){
 }
 
 */
-
+/*
 void initBoard(GameBoard *board){
 	int i,j;
 
@@ -295,5 +308,5 @@ void initBoard(GameBoard *board){
 			board->boardMatrix[i][j][1]=0;
 		}
 }
-
+*/
 
