@@ -34,6 +34,7 @@ int main(){
 	addNewNode(list);
 	redo(list);
 	undo(list);
+	printBoard(list->curr->board);
 	freeList(list);
 
 	return 1;
