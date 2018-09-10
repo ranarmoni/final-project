@@ -1,10 +1,6 @@
 
-int undo(ActionList *list);
-int redo(ActionList *list);
-void addNewNode(ActionList *list);
-void reset(ActionList *list);
-ActionList* initList();
 
+#include "game.h"
 
 
 struct Node {
@@ -13,13 +9,21 @@ struct Node {
 	struct Node* prev;
 };
 
+typedef struct Node Node;
+
 struct ActionList{
 	Node *curr;
 	Node *first;
 };
 
-typedef struct Node node;
+
 typedef struct ActionList ActionList;
 
 
 
+
+int undo(ActionList *list);
+int redo(ActionList *list);
+int addNewNode(ActionList *list);
+void reset(ActionList *list);
+int initList(ActionList* list);

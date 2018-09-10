@@ -1,22 +1,18 @@
 CC = gcc
-OBJS = fileIO.o MainAux.o
-EXEC = io
-COMP_FLAG = -ansi -O3 -Wall -Wextra -Werror -pedantic-errors
-GUROBI_COMP = -I/usr/local/lib/gurobi563/include
-GUROBI_LIB = -L/usr/local/lib/gurobi563/lib -lgurobi56
+OBJS = ActionList.o MainAux.o
+EXEC = ActionList
+COMP_FLAG = -ansi -Wall -Wextra \
+-Werror -pedantic-errors
 
 $(EXEC): $(OBJS)
-	$(CC) $(OBJS) $(GUROBI_LIB) -o $@ -lm
+	$(CC) $(OBJS) -o $@
+	
+ActionList.o: ActionList.h ActionList.c game.h MainAux.h
+	$(CC) $(COMP_FLAG) -c $*.c
 
-#grb_solver.o: grb_solver.c game.h MainAux.o 
-#	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
-	
-MainAux.o: MainAux.c MainAux.h
+MainAux.o: MainAux.h MainAux.c game.h 
 	$(CC) $(COMP_FLAG) -c $*.c
-	
-fileIO.o: fileIO.c fileIO.h game.h
-	$(CC) $(COMP_FLAG) -c $*.c
-	
+
 clean:
 	rm -f $(OBJS) $(EXEC)
 	

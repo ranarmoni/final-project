@@ -1,5 +1,40 @@
 
 
+#include "ActionList.h"
+#include "MainAux.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+
+
+
+int initList(ActionList *list);
+int undo(ActionList *list);
+int addNewNode(ActionList *list);
+int printChanges(GameBoard *before, GameBoard *after, char *func);
+int clearTailOfList(ActionList *list);
+
+int TABLE_SIZE = 4;
+int BLOCK_SIZE_N = 2;
+int BLOCK_SIZE_M = 2;
+
+int main(){
+	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList));
+	initList(list);
+	list->curr->board->board = (int*)calloc(48,sizeof(int));
+	addNewNode(list);
+	(list->curr->board->board)[1]=2;
+	undo(list);
+	
+	return 1;
+
+}
+
+
+
+/*real code from here*/
 
 int undo(ActionList *list){
 	if(list->curr->prev==0){
@@ -22,20 +57,21 @@ int redo(ActionList *list){
 }
 
 int printChanges(GameBoard *before, GameBoard *after, char *func){
-	int i,j,val1,val2;
+	int i,j,val1,val2,index;
 	for(i=0;i<BLOCK_SIZE_N;i++){
 		for(j=0;j<BLOCK_SIZE_M;i++){
-			val1=(before->board)[i][j][0];
-			val1=(after->board)[i][j][0];
+			index=calcIndex(i,j,0,TABLE_SIZE,3);
+			val1=(before->board)[index];
+			val2=(after->board)[index];
 			if(val1!=val2){
 				if(val1==0){
-					printf("%s %f,%f, from '_' to %f\n",func, i+1,j+1,val2);
+					printf("%s %d,%d, from '_' to %d\n",func, i+1,j+1,val2);
 				}
 				if(val2==0)	{
-					printf("%s %f,%f, from %f to '_'\n",func, i+1,j+1,val1);
+					printf("%s %d,%d, from %d to '_'\n",func, i+1,j+1,val1);
 				}
 				if(val1!=0&&val2!=0){
-					printf("%s %f,%f, from %f to %f\n",func, i+1,j+1,val1,val2);
+					printf("%s %d,%d, from %d to %d\n",func, i+1,j+1,val1,val2);
 				}
 			}
 		}
@@ -47,15 +83,15 @@ int printChanges(GameBoard *before, GameBoard *after, char *func){
 
 GameBoard* copyBoard(GameBoard *oldBoard){
 	int i,j;
-	newBoard=(GameBoard*)calloc(1,sizeof(GameBoard));
-	if(NewBoard==0){
+	GameBoard *newBoard=(GameBoard*)calloc(1,sizeof(GameBoard));
+	if(newBoard==0){
 		printf("allocation failed. bye!");
-		exit();
+		exit(0);
 	}
 	newBoard->board=(int*)calloc(3*BLOCK_SIZE_M*BLOCK_SIZE_N,sizeof(int));
-	if(NewBoard==0){
+	if(newBoard==0){
 			printf("allocation failed. bye!");
-			exit();
+			exit(0);
 		}
 	for(i=0;i<BLOCK_SIZE_N;i++){
 			for(j=0;j<BLOCK_SIZE_M;i++){
@@ -69,55 +105,50 @@ GameBoard* copyBoard(GameBoard *oldBoard){
 }
 
 
-void addNewNode(ActionList *list){
-	clearTailOfList(list);
+int addNewNode(ActionList *list){
 	Node *newNode = (Node*)calloc(1,sizeof(Node));
-	if(NewNode==0){
+	clearTailOfList(list);
+	if(newNode==0){
 			printf("allocation failed. bye!");
-			exit();
+			exit(0);
 		}
 	newNode->board = copyBoard(list->curr->board);
 	newNode->prev = list->curr;
-	newNode->next==0;
+	newNode->next=0;
 	list->curr->next = newNode;
 	list->curr=newNode;
 	return 0;
 }
 
 int clearTailOfList(ActionList *list){
-	Node curr,next;
+	Node *currNode,*next;
 	if(list->curr->next==0)
 		return 0;
-	curr = list->curr->next;
-	while(curr->next!=0){
-		next=curr->next;
-		free(curr);
-		curr=next;
+	currNode = list->curr->next;
+	while(currNode->next!=0){
+		next=currNode->next;
+		free(currNode);
+		currNode=next;
 	}
-	free(curr);
+	free(currNode);
 	return 0;
 }
 
 void reset(ActionList *list){
-	list->curr=list->head;
+	list->curr=list->first;
 	clearTailOfList(list);
 	printf("Board reset\n");
 }
 
-
-ActionList* initList(){
-	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList));
+/*needs to pre allocate pointer*/
+int initList(ActionList* list){
 	list->first = (Node*)calloc(1,sizeof(Node));
 	list->curr=list->first;
 	list->curr->prev=0;
 	list->curr->next=0;
 	list->curr->board=0;
-	return list;
+	return 1;
 }
 
-void main(){
-	ActionList list = initList();
-	list->board =
-}
 
 
