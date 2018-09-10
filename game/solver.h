@@ -10,12 +10,11 @@
 
 #include "game.h"
 #include <stdlib.h>
-#include "MainAux.h"
 
 /*
  * seed to be set by main for randomization
  */
-void setSeed();
+void setSeed(int seed);
 
 
 

@@ -1,7 +1,10 @@
-#include "solver.h"
+#include "game.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "solver.h"
+#include "MainAux.h"
+#include "fileIO.h"
 
 int BLOCK_SIZE_N;
 int BLOCK_SIZE_M;
@@ -72,7 +75,7 @@ void setSeed(int seed){
 }
 
 int countNumberOfSols(GameBoard *originalBoard){
-	/* GameBoard tempBoard; */
+	GameBoard tempBoard;
 	int* currBoard = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
 	int count = 0, i, currIndex = 0, currValue;
 	Stack s, *stack = &s;
@@ -81,15 +84,12 @@ int countNumberOfSols(GameBoard *originalBoard){
 		printf("Error: calloc has failed\n");
 		exit(0);
     }
-/*
     tempBoard.board = currBoard;
-*/
 	memcpy((void*)originalBoard->board,(void*)currBoard, TABLE_SIZE*TABLE_SIZE*3);
 
 	initialise(stack);
 	do{
-		if(currIndex > 8){
-/*		if(currIndex > calcIndex(TABLE_SIZE,TABLE_SIZE,2,TABLE_SIZE,3)){*/ /*solution found if current index is larger than the array */
+		if(currIndex > calcIndex(TABLE_SIZE,TABLE_SIZE,2,TABLE_SIZE,3)){ /*solution found if current index is larger than the array */
 			count++;
 			printIntArr(currBoard,9);
 		}
@@ -97,8 +97,7 @@ int countNumberOfSols(GameBoard *originalBoard){
 			/* push all legal values to stack */
 			push(stack, currIndex, 0);
 			for(i=1;i<=TABLE_SIZE;i++){
-			/*	if(isLegalSet(&tempBoard, (currIndex/3)/TABLE_SIZE , (currIndex/3)%TABLE_SIZE , i)) */
-				if(1)
+				if(isLegalSet(&tempBoard, (currIndex/3)/TABLE_SIZE , (currIndex/3)%TABLE_SIZE , i))
 					push(stack, currIndex, i);
 			}
 		}
@@ -125,9 +124,8 @@ int countNumberOfSols(GameBoard *originalBoard){
 
 int main(){
 	GameBoard boardel;
-	int mat[9] = {0,0,0,0,0,0,0,0,0};
-	TABLE_SIZE = 3;
-	boardel.board = mat;
+	loadFile("sample.sud", &boardel);
+	printIntArr(boardel.board,48);
 	printf("%d solutions\n",countNumberOfSols(&boardel));
 
 

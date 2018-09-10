@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "solver.h"
 #include "parser.h"
+#include "MainAux.h"
 
 
 GameBoard board;
@@ -46,17 +47,17 @@ int setCell(int z, int x, int y){
 	return 1;
 }
 
-/*
+
 int isLegalSet(GameBoard *board ,int z, int x, int y){
 	int i,j,currRow,currCol;
 
 
 	for(currRow=0;currRow<BLOCK_SIZE_M;++currRow) //scan relevant column for collisions
-		if(z==board->boardMatrix[currRow][y][0])
+		if(z==board->board[calcindex(currRow,y,0,TABLE_SIZE,3)])
 			return 0;
 
-	for(currCol=0;currCol<BLOCK_SIZE_N;++currCol)//scan relevant row for collisions
-			if(z==board->boardMatrix[x][currCol][0])
+	for(currCol=0;currCol<board;++currCol)//scan relevant row for collisions
+			if(z==board->board[calcindex(x,currCol,0,TABLE_SIZE,3)][x][currCol][0])
 				return 0;
 
 
@@ -66,13 +67,12 @@ int isLegalSet(GameBoard *board ,int z, int x, int y){
 
 	for(i=0;i<BLOCK_SIZE_N;i++)//scan relevant block for collisions, starting top left corner.
 		for(j=0;j<BLOCK_SIZE_M;j++)
-			if(z==board->boardMatrix[currRow+i][currCol+j][0])
+			if(z==board->board[calcindex(currRow+i,currCol+j,0,TABLE_SIZE,3)])
 				return 0;
 
 	return 1;
 }
 
-*/
 
 int boardHasError(GameBoard *board){
 	int i,j,N=BLOCK_SIZE_N+BLOCK_SIZE_M;

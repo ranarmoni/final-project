@@ -74,10 +74,3 @@ int saveFile(char *filename, GameBoard *newBoard){
 	return 1;
 }
 
-int main() {
-	GameBoard boardel;
-	loadFile("out",&boardel);
-	printIntArr(boardel.board,48);
-	saveFile("out0", &boardel);
-	return 1;
-}
