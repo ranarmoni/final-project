@@ -8,6 +8,8 @@
 #ifndef GAME_H_
 #define GAME_H_
 
+
+
 extern int BLOCK_SIZE_N;
 extern int BLOCK_SIZE_M;
 extern int TABLE_SIZE; /* =N*M */
@@ -16,15 +18,31 @@ extern char address[256];
 /*#include "parser.h"*/
 
 
-int gameMode; /*0=init, 1=solve, 2=edit*/
 int gameMode; /* 0=init, 1=solve, 2=edit */
 int markErrors;
-
 
 
 typedef struct gameBoardStruct{
 	int* board;
 } GameBoard;
+
+struct Node {
+	GameBoard *board;
+	struct Node* next;
+	struct Node* prev;
+};
+
+typedef struct Node Node;
+
+struct ActionList{
+	Node *curr;
+	Node *first;
+};
+
+
+typedef struct ActionList ActionList;
+
+
 
 
 /* initialization function. recieves fixed cells amount using parser,
@@ -34,8 +52,7 @@ int startGame();
 /*
  * set value z to cell (x,y). calls private functions that validates that set is legal.
  */
-int setCell(int z, int x, int y);
-
+int setCell(int z, int x, int y, ActionList *list);
 /*
  * give hint in cell (x,y) from stord solution.
  */
@@ -61,7 +78,7 @@ void exitCommand();
 /*
  * prints gameboard
  */
-void printBoard(GameBoard board);
+void printBoard(GameBoard *board);
 
 /*
  * checks whether game is over (there are 81 full cells).
