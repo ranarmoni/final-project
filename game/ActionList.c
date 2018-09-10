@@ -18,23 +18,15 @@ int clearTailOfList(ActionList *list);
 void copyBoard(GameBoard *oldBoard, GameBoard *newBoard);
 
 
-int TABLE_SIZE = 4;
-int BLOCK_SIZE_N = 2;
-int BLOCK_SIZE_M = 2;
+int TABLE_SIZE = 16;
+int BLOCK_SIZE_N = 4;
+int BLOCK_SIZE_M = 4;
 
 int main(){
 	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList*));
 	initList(list);
-	addNewNode(list);
-	addNewNode(list);
-	list->curr->board->board[2]=2;
-	list->curr->board->board[0]=2;
-	list->curr->board->board[1]=2;
+	setCell(3,0,0,list);
 	undo(list);
-	addNewNode(list);
-	redo(list);
-	undo(list);
-	printBoard(list->curr->board);
 	freeList(list);
 
 	return 1;
@@ -46,12 +38,16 @@ int main(){
 /*real code from here*/
 
 int undo(ActionList *list){
+	Node *temp;
 	if(list->curr->prev==0){
 		printf("Error: no moves to undo\n");
 		return 0;
 	}
-	printChanges(list->curr->prev->board,list->curr->board,"Undo");
-	list->curr = list->curr->prev;
+	temp = list->curr->prev;
+	list->curr=temp;
+	printBoard(list->curr->board);
+	printChanges(list->curr->board,list->curr->next->board,"Undo");
+
 
 	return 0;
 }

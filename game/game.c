@@ -100,11 +100,12 @@ int hasError(GameBoard *board ,int x, int y){
 
 
 	for(currRow=0;currRow<BLOCK_SIZE_M;++currRow) /*scan relevant column for collisions*/
-		if(z==board->board[calcIndex(currRow,y,0,TABLE_SIZE,3)])
+
+		if(z==board->board[calcIndex(currRow,y,0,TABLE_SIZE,3)]&&currRow!=x)
 			return 1;
 
 	for(currCol=0;currCol<BLOCK_SIZE_N;++currCol)/*scan relevant row for collisions*/
-			if(z==board->board[calcIndex(x,currCol,0,TABLE_SIZE,3)])
+			if(z==board->board[calcIndex(x,currCol,0,TABLE_SIZE,3)]&&currCol!=y)
 				return 1;
 
 
@@ -114,7 +115,7 @@ int hasError(GameBoard *board ,int x, int y){
 
 	for(i=0;i<BLOCK_SIZE_N;i++)/*scan relevant block for collisions, starting top left corner.*/
 		for(j=0;j<BLOCK_SIZE_M;j++)
-			if(z==board->board[calcIndex(currRow+i,currCol+j,0,TABLE_SIZE,3)])
+			if(z==board->board[calcIndex(currRow+i,currCol+j,0,TABLE_SIZE,3)]&&(i!=x || j!=y))
 				return 1;
 
 	return 0;
@@ -180,10 +181,10 @@ void hintCell(int x,int y){
 }
 */
 
-
+/*
 void validateBoard(){
 	GameBoard newSol, *temp;
-	/* ******************************** */
+	 ********************************
 	deepCopy(&newSol, &board);
 	temp = hasSolution(&newSol);
 	if (temp != NULL){
@@ -193,7 +194,7 @@ void validateBoard(){
 	else
 		printf("Validation failed: board is unsolvable\n");
 }
-
+*/
 /*
  * a.	Restart the game by calling startGame().
  */
@@ -206,12 +207,12 @@ void restartGame(){
  * close everything
  */
 void exitCommand(){
-	free(address);
+	/*free(address);*/
 	printf("Exiting...\n");
 	}
 
 int show_errors(){
-	if(markErrors==0&gameMode==1){
+	if(markErrors==0 && gameMode==1){
 		return 0;
 	}
 	return 1;
@@ -224,7 +225,7 @@ int show_errors(){
 
 void printSeperatingDashes(){
 	int i;
-	for(i=0;i<(4*(BLOCK_SIZE_N)+BLOCK_SIZE_M+1);i++)
+	for(i=0;i<(4*(BLOCK_SIZE_N*BLOCK_SIZE_M)+BLOCK_SIZE_M+1);i++)
 		printf("-");
 	printf("\n");
 }
@@ -245,17 +246,18 @@ void printBoard(GameBoard *board){
 		for(i=0; i<BLOCK_SIZE_M; i++){
 				printf("|");
 				for(j=0; j<BLOCK_SIZE_N; j++){
-
+					printf(" ");
+					if(board->board[calcIndex(x,y,0,TABLE_SIZE,3)]==0)
+						printf("  ");
+					else
+						printf("%2d",board->board[calcIndex(x,y,0,TABLE_SIZE,3)]);
 					if(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==1)
 						printf(".");
 					if(show_errors() && hasError(board,x,y))
 						printf("*");
 					else
 						printf(" ");
-					if(board->board[calcIndex(x,y,0,TABLE_SIZE,3)]==0)
-						printf(" ");
-					else
-						printf("%2d",board->board[calcIndex(x,y,1,TABLE_SIZE,3)]);
+
 					y++;
 				}
 							}
