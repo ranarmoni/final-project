@@ -16,30 +16,31 @@ int loadFile(char *filename, GameBoard *newBoard){
 	if(!fptr)
 		return 0;
 
-	printf("loaded file\n");
-
-	if(!fscanf(fptr,"%d",&n) || !fscanf(fptr,"%d",&m))
+	if(!fscanf(fptr,"%d",&m) || !fscanf(fptr,"%d",&n))
 		return 0;
 
-	printf("loaded dim %d,%d\n", m, n);
 	BLOCK_SIZE_M = m;
 	BLOCK_SIZE_N = n;
 	TABLE_SIZE = m*n;
 	boardMatrix = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
 
-	while(fscanf(fptr,"%d",&val) != -1){
+	if(!boardMatrix){
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
 
-		printf("loaded value %d\n", val);
+	while(fscanf(fptr,"%d",&val) != -1){
 		boardMatrix[i] = val;
 		c = fgetc(fptr);
 		boardMatrix[i+1] = (c=='.');
 		i += 3;
 	}
-	printf("out of loop\n");
-	fclose(fptr);
-	printf("closed file\n");
+
+	if(fclose(fptr) != 0){
+		printf("Problem while closing the file");
+		exit(0);
+	}
 	newBoard->board = boardMatrix;
-	printf("matrix loaded\n");
 	return 1;
 }
 
@@ -51,35 +52,32 @@ int saveFile(char *filename, GameBoard *newBoard){
 	if(!sFile)
 		return 0;
 
+	fprintf(sFile,"%d %d\n",BLOCK_SIZE_M, BLOCK_SIZE_N);
 
-	printf("dims are %d %d",BLOCK_SIZE_N,BLOCK_SIZE_M);
-
-	fprintf(sFile,"%d ",BLOCK_SIZE_N);
-	printf("wrote m and n\n");
-	fprintf(sFile,"%d\n",BLOCK_SIZE_M);
-
-	printf("%d\n",TABLE_SIZE);
 	for(i=0; i<TABLE_SIZE;i++){
 		for(j=0; j<TABLE_SIZE;j++){
 			fprintf(sFile,"%d",boardMatrix[calcIndex(i,j,0,TABLE_SIZE,3)]);
 			if(boardMatrix[calcIndex(i,j,1,TABLE_SIZE,3)] == 1)
-				fprintf(sFile,"%c",'.');
+				fprintf(sFile,".");
 			if(j != TABLE_SIZE-1)
-				fprintf(sFile,"%c",' ');
-			else if(i != TABLE_SIZE-1)
-				fprintf(sFile,"%c",'\n');
+				fprintf(sFile," ");
+			else
+				fprintf(sFile,"\n");
 		}
 	}
 
-	fclose(sFile);
+	if(fclose(sFile) != 0){
+		printf("Problem while closing the file");
+		exit(0);
+	}
+
 	return 1;
 }
 
 int main() {
 	GameBoard boardel;
-	loadFile("in",&boardel);
+	loadFile("out",&boardel);
 	printIntArr(boardel.board,48);
-	saveFile("out", &boardel);
+	saveFile("out0", &boardel);
 	return 1;
 }
-

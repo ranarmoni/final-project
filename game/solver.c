@@ -1,111 +1,86 @@
-#include "solver.h"
+#include "game.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-int backtracking(GameBoard *board, int random, int x, int y);
+int BLOCK_SIZE_N;
+int BLOCK_SIZE_M;
+int TABLE_SIZE;
 
+typedef struct node{
+    int index;
+    int value;
+    struct node *next;
+} Node;
+
+typedef struct {
+    Node *top;
+    int size;
+} Stack;
+
+void initialise(Stack *s){
+    s->size = 0;
+    s->top = NULL;
+}
+
+void push(Stack *s, int indx, int val){
+    Node *np;
+
+    np = (Node *)malloc(sizeof(Node));
+    if (np == NULL) {
+		printf("Error: calloc has failed\n");
+		exit(0);
+    }
+
+    np->index = indx;
+    np->value = val;
+    np->next = s->top;
+    s->top = np;
+
+    s->size++;
+}
+
+void pop(Stack *s){
+    int temp;
+    Node *np;
+
+    if (s->top == NULL) {
+        printf("stack is empty");
+    }
+
+    np = s->top;
+    s->top = np->next;
+    s->size--;
+    free(np);
+}
+
+int getTop(Stack *s, int getIndex){
+	if(getIndex == 1)
+		return s->top->index;
+	else
+		return s->top->value;
+}
 
 void setSeed(int seed){
 	srand(seed);
 }
 
+int countNuberOfSols(GameBoard *originalBoard){
+	int* currBoard = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+	int count = 0, i;
+	Stack stack = (Stack*)calloc(sizeof(Stack));
 
+    if (!currBoard) {
+		printf("Error: calloc has failed\n");
+		exit(0);
+    }
 
-GameBoard* generateSolution(GameBoard *board){
-	backtracking(board, 1, 0, 0);
-	return board;
-}
+	memcpy((void*)originalBoard->board,(void*)currBoard);
 
-GameBoard* generateBoard(GameBoard *solution,GameBoard *board, int fixedAmnt){
-	int i,x, y;
+	initialise(stack);
+	do{
+		for(i=0;i<TABLE_SIZE;i++){
 
-	for(i=0; i<fixedAmnt; ++i){
-		x = (rand() % 9);
-		y = (rand() % 9);
-
-		if( board->boardMatrix[x][y][0] == 0 ){
-			board->boardMatrix[x][y][0] = solution->boardMatrix[x][y][0];
-			board->boardMatrix[x][y][1] = 1;
 		}
-		else
-			--i;
-	}
-	return board;
-}
-
-GameBoard* hasSolution(GameBoard *board){
-	printf("copy of the curr board\n");
-	printBoard(*board);
-	if( backtracking(board, 0, 0, 0) == 1)
-		return board;
-	else
-		return NULL;
-}
-
-int backtracking(GameBoard *board, int isRandom, int x, int y){
-
-	int i, currVal = 0;
-	int possibleVals[TABLE_SIZE],
-		options = 0,
-		success=0,
-		nextX = x,
-		nextY = y;
-	/*set the next cell coordinates */
-	++nextX;
-	if(nextX==TABLE_SIZE){
-		nextX=0;
-		++nextY;
-	}
-
-
-	/*
-	 * stop if the end of the table was reached
-	 */
-	if(x==TABLE_SIZE || y==TABLE_SIZE){
-		printf("finished solving\n");
-		return 1;
-	}
-	/*
-	 * check if cell is blank
-	 */
-	if(board->boardMatrix[x][y][0] == 0){
-		/*
-		 * find all possible values for the cell based on current state
-		 */
-		for(i=0; i<TABLE_SIZE; ++i){
-			possibleVals[i] = isLegalSet(board,i+1,x,y);
-			options += possibleVals[i];
-		}
-
-		while(options>0 && success==0){
-
-			/*
-			 * choose a vlaue for the cell
-			 */
-			if(isRandom)
-				currVal = rand()%TABLE_SIZE;
-			while(possibleVals[currVal] == 0){
-				if(isRandom)
-					currVal = rand()%TABLE_SIZE;
-				else
-					currVal++;
-			}
-
-			/*take the used value out	 */
-			possibleVals[currVal] = 0;
-			--options;
-
-			/*
-			 * place the value in the cell and make the recursive call
-			 */
-			board->boardMatrix[x][y][0] = currVal+1;
-
-			success = backtracking(board,isRandom,nextX,nextY);
-		}
-		if (success == 0)
-			board->boardMatrix[x][y][0] = 0;
-		return success;
-	}
-
-	return backtracking(board,isRandom,nextX,nextY);
+	}while(stack->top != NULL);
+	return count;
 }
