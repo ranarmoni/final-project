@@ -1,5 +1,9 @@
 
-
+int undo(ActionList *list);
+int redo(ActionList *list);
+void addNewNode(ActionList *list);
+void reset(ActionList *list);
+ActionList* initList();
 
 
 

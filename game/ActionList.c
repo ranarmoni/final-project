@@ -52,7 +52,7 @@ GameBoard* copyBoard(GameBoard *oldBoard){
 		printf("allocation failed. bye!");
 		exit();
 	}
-	newBoard->board=(int*)calloc(3**BLOCK_SIZE_M*BLOCK_SIZE_N,sizeof(int));
+	newBoard->board=(int*)calloc(3*BLOCK_SIZE_M*BLOCK_SIZE_N,sizeof(int));
 	if(NewBoard==0){
 			printf("allocation failed. bye!");
 			exit();
@@ -98,9 +98,26 @@ int clearTailOfList(ActionList *list){
 	return 0;
 }
 
-int reset(ActionList *list){
+void reset(ActionList *list){
 	list->curr=list->head;
 	clearTailOfList(list);
+	printf("Board reset\n");
+}
+
+
+ActionList* initList(){
+	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList));
+	list->first = (Node*)calloc(1,sizeof(Node));
+	list->curr=list->first;
+	list->curr->prev=0;
+	list->curr->next=0;
+	list->curr->board=0;
+	return list;
+}
+
+void main(){
+	ActionList list = initList();
+	list->board =
 }
 
 
