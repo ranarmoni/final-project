@@ -316,6 +316,7 @@ int validateBoard(GameBoard *board){
 void exitCommand(ActionList *list){
 	freeList(list);
 	printf("Exiting...\n");
+	exit(1);
 	}
 
 int show_errors(){
