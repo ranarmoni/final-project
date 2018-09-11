@@ -16,7 +16,7 @@ int markErrors; /*0=no, 1=yes*/
 
 int main(){
 	/* do first */
-	int *command;
+	int *command,exitStatus = 0;
 	ActionList *list;
 	printf("Sudoku\n------\n");
 	gameMode = 0;
@@ -24,7 +24,8 @@ int main(){
 	initList(list);
 
 	while(1){
-
+		if(exitStatus == 1)
+			break;
 		command = readCommand();
 
 		switch(command[0]){
@@ -91,6 +92,7 @@ int main(){
 
 			case 15: /*exit*/
 				exitCommand(list);
+				exitStatus = 1;
 				break;
 		}
 
