@@ -25,11 +25,60 @@ void deepCopy(GameBoard *to, GameBoard *from);
 void initBoard(GameBoard *board);
 int boardHasError(GameBoard *board);
 int hasError(GameBoard *board ,int x, int y);
+void loadBoard(ActionList *list);
+int saveBoard(ActionList *list);
+void markCellsAsFixed(GameBoard *board);
+int isLegalSet(GameBoard *board ,int z, int x, int y);
+int setCell(int z, int x, int y, ActionList *list);
 
 
 int startGame(){
 
 	return 1;
+}
+
+
+void loadBoard(ActionList *list){
+	cleanList(list);
+	if(address==""){
+		BLOCK_SIZE_N = 3;
+		BLOCK_SIZE_M = 3;
+		TABLE_SIZE = 9;
+		list->first->board->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
+		}
+	else{
+		loadFile(address, list->curr->board);
+		}
+}
+
+int saveBoard(ActionList *list){
+	if(gameMode==2){
+		if(boardHasError(list->curr->board)){
+			printf("Error: board contains erroneous values\n");
+			return 0;
+		}
+		if(!validateBoard(list->curr->board)){
+			printf("Error: board validation failed\n");
+			return 0;
+		}
+		markCellsAsFixed(list->curr->board);
+	}
+	if(!saveFile(address, list->curr->board)){
+		printf("Error: File cannot be created or modified\n");
+		return 0;
+	}
+	printf("Saved to: %s\n", address);
+	return 1;
+
+
+}
+
+void markCellsAsFixed(GameBoard *board){
+	int i;
+	for(i=0;i<TABLE_SIZE*TABLE_SIZE;i++){
+		if(board[i*3]!=0)
+			board[i*3+1]=1;
+	}
 }
 
 
@@ -91,6 +140,38 @@ int boardHasError(GameBoard *board){
 			if(hasError(board,i,j))
 				return 1;
 	return 0;
+}
+
+
+int autofill(ActionList *list){
+	int i, val, possibleVal, writeVal, j;
+	GameBoard *newBoard = (GameBoard*)calloc(1,sizeof(GameBoard));
+	newBoard->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
+	addNewNode(list);
+	copyBoard(list->curr->board, newBoard);
+	for(i=0;i<BLOCK_SIZE_N;i++){
+		for(j=0;j<BLOCK_SIZE_M;j++){
+			if(list->curr->board[clacIndex(i,j,0,TABLE_SIZE,3)]==0){
+				writeVal=0;
+				for(val=0;val<TABLE_SIZE;val++){
+					if(isLegalSet(list->curr->board ,z, i, j)){
+						if(writeVal){
+							writeVal=0;
+							break;
+						}
+						else{
+							possibleVal=val;
+							writeVal=1;
+						}
+					}
+				}
+				if(writeVal)
+					newBoard->board[clacIndex(i,j,0,TABLE_SIZE,3)]=possibleVal;
+			}
+		}
+	}
+	list->curr->board=newBoard;
+	return 1;
 }
 
 
@@ -182,6 +263,7 @@ void hintCell(int x,int y){
 */
 
 /*
+ * NEEDS TO RETURN INT (0=not valid, 1=valid)
 void validateBoard(){
 	GameBoard newSol, *temp;
 	 ********************************
@@ -206,8 +288,9 @@ void restartGame(){
  * free space
  * close everything
  */
-void exitCommand(){
-	/*free(address);*/
+void exitCommand(ActionList *list){
+	free(address);
+	freeList(list);
 	printf("Exiting...\n");
 	}
 

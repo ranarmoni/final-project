@@ -1,47 +1,96 @@
 #include "game.h"
 #include "solver.h"
 #include "parser.h"
+#include "ActionList.h"
+
 #include <stdio.h>
 
 #define true 1
 
+int BLOCK_SIZE_N;
+int BLOCK_SIZE_M;
+int TABLE_SIZE;
+int gameMode; /* 0=init, 1=solve, 2=edit */
+int markErrors; /*0=no, 1=yes*/
+
+
 int main(){
 	/* do first */
-	int BLOCK_SIZE_N = 3;
-	int BLOCK_SIZE_M = 3;
-	int TABLE_SIZE = 9;
 	int *command;
-	if(startGame() == 0){
-		exitCommand();
-		return 1;
-	}
-	while(1){
-		command = readCommand();
-		if(command[0]==1 && !isGameOver()){ /* command is "set" */
-			setCell(command[3], command[1], command[2]);
-			continue;
-		}
-		if(command[0]==2 && !isGameOver()){ /* command is "hint" */
-			hintCell(command[1],command[2]);
-			continue;
-		}
-		if(command[0]==3 && !isGameOver()){ /*command is "validate"*/
-			validateBoard();
-			continue;
-		}
-		if(command[0]==4){/* command is "restart"*/
-			restartGame();
-			continue;
-		}
-		if(command[0]==5){ /*command is "exit" */
-			exitCommand();
-			free(command);
-			return 1;
-		}
-		else{ /* invalid command or set/hint/validate after puzzle solved */
-			printf("ERROR: invalid command\n");
+	printf("Sudoku\n------\n");
+	gameMode = 0;
+	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList*));
+	initList(list);
 
+	while(1){
+
+		command = readCommand();
+
+		switch(command[0]){
+
+			case 1: /*solve*/
+				loadBoard(list);
+				gameMode=1;
+				break;
+
+			case 2: /*edit*/
+				loadBoard(list);
+				gameMode=2;
+				break;
+
+			case 3: /*mark_errors X*/
+				markErrors=command[1];
+				break;
+
+			case 4: /*print_board*/
+				printBoard(list->curr->board);
+				break;
+
+			case 5: /*set X Y Z*/
+				setCell(command[3], command[1], command[2], list);
+				break;
+
+			case 6: /*validate*/
+				validateBoard();
+				break;
+
+			case 7: /*generate X Y*/
+				generateBoard(command[1],command[2]);
+				break;
+
+			case 8: /*undo*/
+				undo(list);
+				break;
+
+			case 9: /*redo*/
+				redo(list);
+				break;
+
+			case 10: /*save X*/
+				saveBoard(list);
+				break;
+
+			case 11: /*hint X Y*/
+				hint(command[1],command[2]);
+				break;
+
+			case 12: /*num_solutions*/
+				numSolutions();
+				break;
+
+			case 13: /*autofill*/
+				autoFill(list);
+				break;
+
+			case 14: /*reset*/
+				reset(list);
+				break;
+
+			case 15: /*exit*/
+				exitCommand(list);
+				break;
 		}
+
 
 	}
 
