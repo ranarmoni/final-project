@@ -39,7 +39,6 @@ int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
 	    	for (v = 0; v < nm; v++) {
 	    		if (board->board[calcIndex(i,j,0,nm,3)]-1 == v){
 	    			initVals[calcIndex(i,j,v,nm,nm)] = 1.0;
-	    			printf("found %d in index %d,%d\n",v,i,j);
 	    		}
 	    		else
 	    			initVals[calcIndex(i,j,v,nm,nm)] = 0.0;
@@ -169,7 +168,6 @@ int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
     	    	for (v = 0; v < nm; v++) {
     	    		if (sol[calcIndex(i,j,v,nm,nm)] == 1){
     	    			solutionBoard->board[calcIndex(i,j,0,nm,3)] = v+1;
-    	    			printf("%d in index %d,%d which is %d\n", v+1, i,j, calcIndex(i,j,0,nm,3));
     	    		}
     	    	}
     	    }

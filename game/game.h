@@ -102,7 +102,7 @@ int autofill(ActionList *list);
 void exitCommand(ActionList *list);
 void hintCell(GameBoard *board,int x,int y);
 int numSolutions();
-void generateBoard(int x, int y);
+void generateBoard(GameBoard *board, int x, int y);
 
 
 #endif /* GAME_H_ */

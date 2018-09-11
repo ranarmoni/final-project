@@ -9,6 +9,7 @@
 #include "fileIO.h"
 #include <string.h>
 #include "grb_solver.h"
+#include <time.h>
 
 
 ActionList actionList;
@@ -39,6 +40,7 @@ void generateBoard(GameBoard *board, int x, int y);
 int numSolutions();
 int markErrorsInBoard(GameBoard *board);
 int markErrorsInCell(GameBoard *board ,int x, int y);
+int cellHaslegalValue(GameBoard *board, int x,int y);
 
 
 
@@ -60,12 +62,14 @@ void loadBoard(ActionList *list){
 		}
 		else{
 			printf("Error: File doesn't exist or cannot be opened\n");
+			return;
 		}
 	}
 	else{
 		cleanList(list);
 		loadFile(address, list->curr->board);
 	}
+	printBoard(list->curr->board);
 }
 
 int saveBoard(ActionList *list){
@@ -309,13 +313,13 @@ void hintCell(GameBoard *board,int x,int y){
 		solution.board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
 		err = ILPsolve(board, &solution);
 		if(err == -1){
-			printf("Gurobi has failed");
+			printf("Gurobi has failed\n");
 			exit(0);
 		}
 		if(err == 0)
 			printf("Error: board is unsolvable\n");
 		else
-			printf("Hint: set cell to %d",board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)]);
+			printf("Hint: set cell to %d\n",solution.board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)]);
 		free(solution.board);
 	}
 }
@@ -419,7 +423,53 @@ int isGameOver(){
 }
 
 void generateBoard(GameBoard *board, int x, int y){
+	int i,j,err=0,randVal,randX,randY, *boardMat=(int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+	srand(time(NULL));
 
+	for(i=0;i<1000;i++){
+		free(boardMat);
+		boardMat = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+		for(j=0;j<x;j++){
+			randX = rand()%TABLE_SIZE;
+			randY = rand()%TABLE_SIZE;
+			if(cellHaslegalValue(board ,randX,randY)){
+				do{
+					randVal = (rand()%TABLE_SIZE)+1;
+				} while(!isLegalSet(board ,randX,randY,randVal));
+				boardMat[calcIndex(randX,randY,0,TABLE_SIZE,3)] = randVal;
+			}
+			else{
+				err = 1;
+				break;
+			}
+		}
+		if(!err){
+			board->board = boardMat;
+			if(ILPsolve(board,board)==1){
+				for(j=0;j<y;j++){
+					randX = rand()%TABLE_SIZE;
+					randY = rand()%TABLE_SIZE;
+					if(board->board[calcIndex(randX,randY,0,TABLE_SIZE,3)] != 0)
+						board->board[calcIndex(randX,randY,0,TABLE_SIZE,3)] = 0;
+					else
+						j--;
+				}
+			}
+			printBoard(board);
+			return;
+		}
+	}
+	printf("Error: puzzle generator failed\n");
+}
+
+int cellHaslegalValue(GameBoard *board, int x,int y){
+	int i;
+
+	for(i=1; i<=TABLE_SIZE; i++){
+		if(isLegalSet(board, x,y,i))
+			return 1;
+	}
+	return 0;
 }
 
 /* copy the content of two gameboards

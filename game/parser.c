@@ -22,9 +22,6 @@ int * readSpecificCommand(int type, int varAmnt , char *delim);
 
 int checkInt(char*);
 
-int getEmptyCells(){
-	return 1;
-}
 
 /*
  * read command from user and return an int array representation of it
@@ -159,13 +156,13 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 			}
 		}
 		if(type==7){
-			if (getEmptyCells()!= 0){
+			if (fullCells!= 0){
 				printf("Error: board is not empty\n");
 				command[0] = -1;
 				return command;
 			}
-			if (command[i]<0 || command[i]>(BLOCK_SIZE_N*BLOCK_SIZE_M) ){
-				printf("Error: value not in range 0-%d\n",getEmptyCells());
+			if (command[i]<0 || command[i]>(TABLE_SIZE*TABLE_SIZE-fullCells) ){
+				printf("Error: value not in range 0-%d\n",TABLE_SIZE*TABLE_SIZE-fullCells);
 				command[0] = -1;
 				return command;
 			}
