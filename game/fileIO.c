@@ -32,7 +32,7 @@ int loadFile(char *filename, GameBoard *newBoard){
 
 	while(fscanf(fptr,"%d",&val) != -1){
 		if(val!=0)
-			fullCellsCount ++;
+			fullCellsCount++;
 		boardMatrix[i] = val;
 		c = fgetc(fptr);
 		boardMatrix[i+1] = (c=='.');

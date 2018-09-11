@@ -8,8 +8,6 @@
 #ifndef GAME_H_
 #define GAME_H_
 
-
-
 extern int BLOCK_SIZE_N;
 extern int BLOCK_SIZE_M;
 extern int TABLE_SIZE; /* =N*M */

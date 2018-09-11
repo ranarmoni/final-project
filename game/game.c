@@ -35,7 +35,7 @@ int validateBoard(GameBoard *board);
 int autofill(ActionList *list);
 void exitCommand(ActionList *list);
 void hintCell(GameBoard *board, int x,int y);
-void generateBoard(int x, int y);
+void generateBoard(GameBoard *board, int x, int y);
 int numSolutions();
 int markErrorsInBoard(GameBoard *board);
 int markErrorsInCell(GameBoard *board ,int x, int y);
@@ -301,9 +301,9 @@ void hintCell(GameBoard *board,int x,int y){
 	GameBoard solution;
 	if(boardHasError(board))
 		printf("Error: board contains erroneous values\n");
-	else if(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==1)
+	else if(board->board[calcIndex(x-1,y-1,1,TABLE_SIZE,3)]==1)
 		printf("Error: cell is fixed\n");
-	else if(board->board[calcIndex(x,y,0,TABLE_SIZE,3)]!=0)
+	else if(board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)]!=0)
 		printf("Error: cell already contains a value\n");
 	else{
 		solution.board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
@@ -315,7 +315,7 @@ void hintCell(GameBoard *board,int x,int y){
 		if(err == 0)
 			printf("Error: board is unsolvable\n");
 		else
-			printf("Hint: set cell to %d",board->board[calcIndex(x,y,0,TABLE_SIZE,3)]);
+			printf("Hint: set cell to %d",board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)]);
 		free(solution.board);
 	}
 }
@@ -417,6 +417,11 @@ void printBoard(GameBoard *board){
 int isGameOver(){
 	return (fullCells == (BLOCK_SIZE_N+BLOCK_SIZE_M)*(BLOCK_SIZE_N+BLOCK_SIZE_M));
 }
+
+void generateBoard(GameBoard *board, int x, int y){
+
+}
+
 /* copy the content of two gameboards
  * if func=0,funtion doesnt print diffs.
  * if func=1, function prints diffs for the undo funtion.

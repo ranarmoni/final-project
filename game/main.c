@@ -58,7 +58,7 @@ int main(){
 				break;
 
 			case 7: /*generate X Y*/
-				/*generateBoard(command[1],command[2]);*/
+				generateBoard(list->curr->board, command[1],command[2]);
 				break;
 
 			case 8: /*undo*/
@@ -96,7 +96,6 @@ int main(){
 				break;
 		}
 		free(command);
-		printf("free\n");
 
 
 	}
