@@ -9,7 +9,7 @@
 #define GRB_SOLVER_H_
 
 
-int ILPsolve(GameBoard board, GameBoard solutionBoard);
+int ILPsolve(GameBoard *board, GameBoard *solutionBoard);
 
 
 

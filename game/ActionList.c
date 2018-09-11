@@ -19,11 +19,11 @@ int clearTailOfList(ActionList *list);
 void copyBoard(GameBoard *oldBoard, GameBoard *newBoard);
 
 
-int TABLE_SIZE = 16;
-int BLOCK_SIZE_N = 4;
-int BLOCK_SIZE_M = 4;
+int TABLE_SIZE;
+int BLOCK_SIZE_N;
+int BLOCK_SIZE_M;
 
-
+/*
 int main(){
 	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList*));
 	initList(list);
@@ -40,6 +40,7 @@ int main(){
 
 }
 
+*/
 
 /*real code from here*/
 

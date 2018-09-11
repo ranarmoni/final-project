@@ -11,11 +11,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-int BLOCK_SIZE_N = 3;
-int BLOCK_SIZE_M = 3;
-int TABLE_SIZE = 9;
+int BLOCK_SIZE_N;
+int BLOCK_SIZE_M;
+int TABLE_SIZE;
 
 char address[];
+int gameMode;
 
 int * readSpecificCommand(int type, int varAmnt , char *delim);
 
@@ -100,7 +101,7 @@ int * readCommand(){
 
 
 int * readSpecificCommand(int type, int varAmnt , char *delim){
-	int i, j, gameState, isInt;
+	int i, isInt;
 	int *command = (int*)calloc(4,sizeof(int));
 	char *token;
 
@@ -110,9 +111,9 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 		exit(0);
 	}
 	/* check if fucntion type legal */
-	if ((gameState == 0 && type != 1 && type!=2 && type != 15) ||
-			(gameState == 1 && type == 7) ||
-			(gameState == 2 && (type == 13 || type == 11 || type == 3))){
+	if ((gameMode == 0 && type != 1 && type!=2 && type != 15) ||
+			(gameMode == 1 && type == 7) ||
+			(gameMode == 2 && (type == 13 || type == 11 || type == 3))){
 		command[0] = 0;
 		return command;
 	}
@@ -182,6 +183,7 @@ int checkInt(char* token){
 	return 1;
 }
 
+/*
 int main(){
 	int *arr;
 	while(1){
@@ -191,5 +193,5 @@ int main(){
 	}
 	return 1;
 }
-
+*/
 

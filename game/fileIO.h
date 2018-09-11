@@ -10,7 +10,6 @@
 
 
 int loadFile(char *filename, GameBoard *newBoard);
-
 int saveFile(char *filename, GameBoard *newBoard);
 
 

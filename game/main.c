@@ -72,7 +72,7 @@ int main(){
 				break;
 
 			case 11: /*hint X Y*/
-				hint(command[1],command[2]);
+				hintCell(command[1],command[2]);
 				break;
 
 			case 12: /*num_solutions*/

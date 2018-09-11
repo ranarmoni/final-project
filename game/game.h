@@ -101,6 +101,9 @@ int isLegalSet(GameBoard *board ,int z, int x, int y);
 int validateBoard(GameBoard *board);
 int autofill(ActionList *list);
 void exitCommand(ActionList *list);
+void hintCell(int x,int y);
+int numSolutions();
+void generateBoard(int x, int y);
 
 
 #endif /* GAME_H_ */

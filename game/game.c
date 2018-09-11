@@ -8,6 +8,7 @@
 #include "MainAux.h"
 #include "fileIO.h"
 #include <string.h>
+#include "grb_solver.h"
 
 
 
@@ -36,6 +37,14 @@ int setCell(int z, int x, int y, ActionList *list);
 int validateBoard(GameBoard *board);
 int autofill(ActionList *list);
 void exitCommand(ActionList *list);
+void hintCell(int x,int y);
+void generateBoard(int x, int y);
+
+int numSolutions();
+{
+	return 0;
+}
+
 
 
 int startGame(){
@@ -262,7 +271,7 @@ int isError(GameBoard *board,int x, int y){
 
 
 void hintCell(int x,int y){
-	int hintVal, err;
+	int err;
 	GameBoard solution;
 	if(boardHasError(&board))
 		printf("Error: board contains erroneous values\n");
