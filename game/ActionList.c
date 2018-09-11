@@ -142,11 +142,11 @@ int addNewNode(ActionList *list){
 
 int clearTailOfList(ActionList *list){
 	Node *currNode,*next;
-	if(list->curr->next==0)
+	if(list->curr->next==NULL)
 		return 0;
 	currNode = list->curr->next;
 
-	while(currNode->next!=0){
+	while(currNode->next!=NULL){
 		next=currNode->next;
 		free(currNode->board->board);
 		free(currNode->board);
@@ -163,7 +163,6 @@ int clearTailOfList(ActionList *list){
 void reset(ActionList *list){
 	list->curr=list->first;
 	clearTailOfList(list);
-	printf("Board reset\n");
 }
 
 /*needs to pre allocate pointer*/
@@ -174,8 +173,8 @@ void initList(ActionList* list){
 
 	/*printf("succesfuly allocated board \n");*/
 	list->curr=list->first;
-	list->curr->prev=0;
-	list->curr->next=0;
+	list->curr->prev=NULL;
+	list->curr->next=NULL;
 	/*printf("finished init \n");*/
 
 }
@@ -191,6 +190,7 @@ void cleanList(ActionList *list){ /*returnes initiated list*/
 
 void freeList(ActionList *list){
 	cleanList(list);
+	free(list->curr->board);
 	free(list->curr);
 	free(list);
 }

@@ -20,12 +20,11 @@ int main(){
 	ActionList *list;
 	printf("Sudoku\n------\n");
 	gameMode = 0;
-	list = (ActionList*)calloc(1,sizeof(ActionList*));
+	list = (ActionList*)calloc(1,sizeof(ActionList));
 	initList(list);
 
-	while(1){
-		if(exitStatus == 1)
-			break;
+	while(exitStatus==0){
+
 		command = readCommand();
 
 		switch(command[0]){
@@ -95,6 +94,8 @@ int main(){
 				exitStatus = 1;
 				break;
 		}
+		free(command);
+		printf("free\n");
 
 
 	}

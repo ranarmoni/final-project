@@ -8,7 +8,7 @@ int BLOCK_SIZE_M;
 int TABLE_SIZE;
 
 int loadFile(char *filename, GameBoard *newBoard){
-	int n=0,m=0,val,i=0,*boardMatrix;
+	int n=0,m=0,val,i=0,*boardMatrix,fullCellsCount = 0;
 	char c;
 
 	FILE *fptr;
@@ -30,6 +30,8 @@ int loadFile(char *filename, GameBoard *newBoard){
 	}
 
 	while(fscanf(fptr,"%d",&val) != -1){
+		if(val!=0)
+			fullCellsCount ++;
 		boardMatrix[i] = val;
 		c = fgetc(fptr);
 		boardMatrix[i+1] = (c=='.');

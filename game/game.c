@@ -48,16 +48,22 @@ int startGame(){
 
 
 void loadBoard(ActionList *list){
-	cleanList(list);
-	if(strcmp(address,"")==0){
-		BLOCK_SIZE_N = 3;
-		BLOCK_SIZE_M = 3;
-		TABLE_SIZE = 9;
-		list->first->board->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
+	if(loadFile(address, list->curr->board)==0){
+		if(strcmp(address,"")==0){
+			cleanList(list);
+			BLOCK_SIZE_N = 3;
+			BLOCK_SIZE_M = 3;
+			TABLE_SIZE = 9;
+			list->first->board->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
 		}
+		else{
+			printf("Error: File doesn't exist or cannot be opened\n");
+		}
+	}
 	else{
+		cleanList(list);
 		loadFile(address, list->curr->board);
-		}
+	}
 }
 
 int saveBoard(ActionList *list){
@@ -142,7 +148,7 @@ int isLegalSet(GameBoard *board ,int z, int x, int y){
 
 
 int boardHasError(GameBoard *board){
-	int i,j,N=BLOCK_SIZE_N+BLOCK_SIZE_M;
+	int i,j,N=BLOCK_SIZE_N*BLOCK_SIZE_M;
 	for(i=0;i<N;i++)
 		for(j=0;j<N;j++)
 			if(hasError(board,i,j))
