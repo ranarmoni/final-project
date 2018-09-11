@@ -62,8 +62,7 @@ void hintCell(int x,int y);
  * return if the board is solveable or not using the relevant function of solver.h,
  *  and stores the new solution supplied by it.
  */
-void validateBoard();
-
+int validateBoard(GameBoard *board);
 /*
  * a.	Restart the game by calling startGame()
  */
@@ -94,6 +93,14 @@ int isLegalSet(GameBoard *board ,int z, int x, int y);
  * get amount of empty cells in the current boardד
  */
 int getEmptyCells();
+
+
+void loadBoard(ActionList *list);
+int saveBoard(ActionList *list);
+int isLegalSet(GameBoard *board ,int z, int x, int y);
+int validateBoard(GameBoard *board);
+int autofill(ActionList *list);
+void exitCommand(ActionList *list);
 
 
 #endif /* GAME_H_ */

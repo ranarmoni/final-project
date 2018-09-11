@@ -23,8 +23,7 @@ int TABLE_SIZE = 16;
 int BLOCK_SIZE_N = 4;
 int BLOCK_SIZE_M = 4;
 
-<<<<<<< HEAD
-=======
+
 int main(){
 	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList*));
 	initList(list);
@@ -40,8 +39,6 @@ int main(){
 	return 1;
 
 }
->>>>>>> master
-
 
 
 /*real code from here*/
