@@ -14,10 +14,10 @@ typedef struct node{
     int index;
     int value;
     struct node *next;
-} Node;
+} StackNode;
 
 typedef struct {
-    Node *top;
+	StackNode *top;
     int size;
 } Stack;
 
@@ -32,9 +32,9 @@ void initialise(Stack *s){
 }
 
 void push(Stack *s, int indx, int val){
-    Node *np;
+	StackNode *np;
 
-    np = (Node *)malloc(sizeof(Node));
+    np = (StackNode *)malloc(sizeof(StackNode));
     if (np == NULL) {
 		printf("Error: calloc has failed\n");
 		exit(0);
@@ -49,7 +49,7 @@ void push(Stack *s, int indx, int val){
 }
 
 void pop(Stack *s){
-    Node *np;
+	StackNode *np;
 
     if (s->top == NULL) {
         printf("stack is empty");
@@ -85,49 +85,49 @@ int countNumberOfSols(GameBoard *originalBoard){
 		exit(0);
     }
     tempBoard.board = currBoard;
-	memcpy((void*)originalBoard->board,(void*)currBoard, TABLE_SIZE*TABLE_SIZE*3);
+	memcpy((void*)currBoard, (void*)originalBoard->board, TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
 
 	initialise(stack);
 	do{
-		if(currIndex > calcIndex(TABLE_SIZE,TABLE_SIZE,2,TABLE_SIZE,3)){ /*solution found if current index is larger than the array */
-			count++;
-			printIntArr(currBoard,9);
-		}
-		else if(currBoard[currIndex] == 0){
-			/* push all legal values to stack */
-			push(stack, currIndex, 0);
-			for(i=1;i<=TABLE_SIZE;i++){
-				if(isLegalSet(&tempBoard, (currIndex/3)/TABLE_SIZE , (currIndex/3)%TABLE_SIZE , i))
-					push(stack, currIndex, i);
+		while(1){
+			if(currIndex >= calcIndex(TABLE_SIZE-1,TABLE_SIZE-1,2,TABLE_SIZE,3)){ /*solution found if current index is larger than the array */
+				count++;
+				break;
 			}
-		}
-		else{
-			currIndex += 3;
-			continue;
+			else if(currBoard[currIndex] == 0){
+				/* push all legal values to stack */
+				push(stack, currIndex, 0);
+				for(i=1;i<=TABLE_SIZE;i++){
+					if(isLegalSet(&tempBoard, i, (currIndex/3)/TABLE_SIZE , (currIndex/3)%TABLE_SIZE)){
+						push(stack, currIndex, i);
+
+					}
+				}
+				break;
+			}
+			else{
+				currIndex += 3;
+				continue;
+			}
 		}
 		currIndex = getTop(stack,1);
 		currValue = getTop(stack, 0);
+		if(currIndex == -1)
+			break;
 		currBoard[currIndex] = currValue;
 		/* if out of options reset board until new move */
 		while(currValue == 0){
 			pop(stack);
 			currIndex = getTop(stack,1);
 			currValue = getTop(stack, 0);
+			if(currIndex == -1)
+				break;
 			currBoard[currIndex] = currValue;
 		}
 		if(stack->top != NULL)
 			pop(stack);
 		currIndex += 3;
-	}while(stack->top != NULL);
+	} while(stack->top != NULL);
+	free(currBoard);
 	return count;
-}
-
-int main(){
-	GameBoard boardel;
-	loadFile("sample.sud", &boardel);
-	printIntArr(boardel.board,48);
-	printf("%d solutions\n",countNumberOfSols(&boardel));
-
-
-	return 1;
 }

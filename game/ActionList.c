@@ -22,24 +22,6 @@ int TABLE_SIZE = 4;
 int BLOCK_SIZE_N = 2;
 int BLOCK_SIZE_M = 2;
 
-int main(){
-	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList*));
-	initList(list);
-	addNewNode(list);
-	addNewNode(list);
-	list->curr->board->board[2]=2;
-	list->curr->board->board[0]=2;
-	list->curr->board->board[1]=2;
-	undo(list);
-	addNewNode(list);
-	redo(list);
-	undo(list);
-	printBoard(list->curr->board);
-	freeList(list);
-
-	return 1;
-
-}
 
 
 

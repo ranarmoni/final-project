@@ -4,10 +4,7 @@
 #include <stdio.h>
 #include "solver.h"
 #include "parser.h"
-<<<<<<< HEAD
-=======
 #include "ActionList.h"
->>>>>>> master
 #include "MainAux.h"
 
 
@@ -64,22 +61,22 @@ int isLegalSet(GameBoard *board ,int z, int x, int y){
 	int i,j,currRow,currCol;
 
 
-	for(currRow=0;currRow<BLOCK_SIZE_M;++currRow) //scan relevant column for collisions
-		if(z==board->board[calcindex(currRow,y,0,TABLE_SIZE,3)])
+	for(currRow=0;currRow<TABLE_SIZE;++currRow) /* scan relevant column for collisions */
+		if(z==board->board[calcIndex(currRow,y,0,TABLE_SIZE,3)])
 			return 0;
 
-	for(currCol=0;currCol<board;++currCol)//scan relevant row for collisions
-			if(z==board->board[calcindex(x,currCol,0,TABLE_SIZE,3)][x][currCol][0])
+	for(currCol=0;currCol<TABLE_SIZE;++currCol) /* scan relevant row for collisions */
+			if(z==board->board[calcIndex(x,currCol,0,TABLE_SIZE,3)])
 				return 0;
 
 
-	// check again if rows/cols & x/y match
+	/* check again if rows/cols & x/y match */
 	currRow=x-(x%BLOCK_SIZE_N);
 	currCol=y-(y%BLOCK_SIZE_M);
 
-	for(i=0;i<BLOCK_SIZE_N;i++)//scan relevant block for collisions, starting top left corner.
+	for(i=0;i<BLOCK_SIZE_N;i++) /* scan relevant block for collisions, starting top left corner. */
 		for(j=0;j<BLOCK_SIZE_M;j++)
-			if(z==board->board[calcindex(currRow+i,currCol+j,0,TABLE_SIZE,3)])
+			if(z==board->board[calcIndex(currRow+i,currCol+j,0,TABLE_SIZE,3)])
 				return 0;
 
 	return 1;
@@ -184,16 +181,7 @@ void hintCell(int x,int y){
 
 
 void validateBoard(){
-	GameBoard newSol, *temp;
-	/* ******************************** */
-	deepCopy(&newSol, &board);
-	temp = hasSolution(&newSol);
-	if (temp != NULL){
-		solution = *temp;
-		printf("Validation passed: board is solvable\n");
-	}
-	else
-		printf("Validation failed: board is unsolvable\n");
+
 }
 
 /*
@@ -208,12 +196,11 @@ void restartGame(){
  * close everything
  */
 void exitCommand(){
-	free(address);
 	printf("Exiting...\n");
 	}
 
 int show_errors(){
-	if(markErrors==0&gameMode==1){
+	if(markErrors==0 && gameMode==1){
 		return 0;
 	}
 	return 1;

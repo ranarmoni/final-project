@@ -1,5 +1,5 @@
 CC = gcc
-OBJS = solver.o MainAux.o fileIO.o game.o
+OBJS = solver.o MainAux.o fileIO.o game.o ActionList.o
 EXEC = back
 COMP_FLAG = -ansi -O3 -Wall -Wextra -Werror -pedantic-errors
 GUROBI_COMP = -I/usr/local/lib/gurobi563/include
@@ -20,8 +20,12 @@ MainAux.o: MainAux.c MainAux.h game.h
 fileIO.o: fileIO.h game.h MainAux.o 
 	$(CC) $(COMP_FLAG) -c $*.c	
 	
-game.o: game.h game.c MainAux.o
+game.o: game.h game.c MainAux.o ActionList.o
 	$(CC) $(COMP_FLAG) -c $*.c	
+	
+ActionList.o: ActionList.c ActionList.h game.h MainAux.h
+	$(CC) $(COMP_FLAG) -c $*.c	
+
 
 	
 clean:
