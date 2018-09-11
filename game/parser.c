@@ -64,7 +64,8 @@ int * readCommand(){
 	while(!feof(stdin)){
 		printf("Enter your command:\n");
 		/* empty line */
-		fgets(line, 258, stdin);
+		if(fgets(line, 258, stdin)==NULL)
+			break;
 		if (sscanf(line,"%s",dummy) <1){ /* stops on spaces as fgets keeps reading them */
 			continue;
 		}

@@ -39,11 +39,8 @@ int autofill(ActionList *list);
 void exitCommand(ActionList *list);
 void hintCell(int x,int y);
 void generateBoard(int x, int y);
-
 int numSolutions();
-{
-	return 0;
-}
+
 
 
 

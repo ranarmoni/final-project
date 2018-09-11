@@ -56,7 +56,7 @@ int main(){
 				break;
 
 			case 7: /*generate X Y*/
-				generateBoard(command[1],command[2]);
+				/*generateBoard(command[1],command[2]);*/
 				break;
 
 			case 8: /*undo*/
@@ -76,7 +76,7 @@ int main(){
 				break;
 
 			case 12: /*num_solutions*/
-				numSolutions();
+				/*numSolutions();*/
 				break;
 
 			case 13: /*autofill*/
