@@ -11,9 +11,6 @@
 #include "grb_solver.h"
 
 
-
-GameBoard board;
-GameBoard solution;
 ActionList actionList;
 int fixedAmnt;
 int fullCells;
@@ -37,7 +34,7 @@ int setCell(int z, int x, int y, ActionList *list);
 int validateBoard(GameBoard *board);
 int autofill(ActionList *list);
 void exitCommand(ActionList *list);
-void hintCell(int x,int y);
+void hintCell(GameBoard *board, int x,int y);
 void generateBoard(int x, int y);
 int numSolutions();
 
@@ -267,18 +264,18 @@ int isError(GameBoard *board,int x, int y){
 }
 
 
-void hintCell(int x,int y){
+void hintCell(GameBoard *board,int x,int y){
 	int err;
 	GameBoard solution;
-	if(boardHasError(&board))
+	if(boardHasError(board))
 		printf("Error: board contains erroneous values\n");
-	else if(board.board[calcIndex(x,y,1,TABLE_SIZE,3)]==1)
+	else if(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==1)
 		printf("Error: cell is fixed\n");
-	else if(board.board[calcIndex(x,y,0,TABLE_SIZE,3)]!=0)
+	else if(board->board[calcIndex(x,y,0,TABLE_SIZE,3)]!=0)
 		printf("Error: cell already contains a value\n");
 	else{
 		solution.board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
-		err = ILPsolve(&board, &solution);
+		err = ILPsolve(board, &solution);
 		if(err == -1){
 			printf("Gurobi has failed");
 			exit(0);
@@ -286,7 +283,7 @@ void hintCell(int x,int y){
 		if(err == 0)
 			printf("Error: board is unsolvable\n");
 		else
-			printf("Hint: set cell to %d",board.board[calcIndex(x,y,0,TABLE_SIZE,3)]);
+			printf("Hint: set cell to %d",board->board[calcIndex(x,y,0,TABLE_SIZE,3)]);
 		free(solution.board);
 	}
 }

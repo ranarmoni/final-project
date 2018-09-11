@@ -87,6 +87,7 @@ int * readCommand(){
 					break;
 				}
 				free(line);
+				printf("command outputted: %d, %d, %d\n",command[0],command[1],command[2]);
 				return command;
 			}
 		}
@@ -97,6 +98,7 @@ int * readCommand(){
 	command = (int*)calloc(4,sizeof(int));
 	command[0] = 15;
 	free(line);
+	printf("command outputted: %d, %d, %d\n",command[0],command[1],command[2]);
 	return command;
 }
 

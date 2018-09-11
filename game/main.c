@@ -30,6 +30,7 @@ int main(){
 		switch(command[0]){
 
 			case 1: /*solve*/
+				printf("in solve, address is %s\n",address);
 				loadBoard(list);
 				gameMode=1;
 				break;
@@ -73,7 +74,7 @@ int main(){
 
 			case 11: /*hint X Y*/
 				printf("command recieved: %d, %d, %d",command[0],command[1],command[2]);
-				hintCell(command[1],command[2]);
+				hintCell(list->curr->board, command[1],command[2]);
 				break;
 
 			case 12: /*num_solutions*/

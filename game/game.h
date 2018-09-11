@@ -56,7 +56,7 @@ int setCell(int z, int x, int y, ActionList *list);
 /*
  * give hint in cell (x,y) from stord solution.
  */
-void hintCell(int x,int y);
+void hintCell(GameBoard *board,int x,int y);
 
 /*
  * return if the board is solveable or not using the relevant function of solver.h,
@@ -101,7 +101,7 @@ int isLegalSet(GameBoard *board ,int z, int x, int y);
 int validateBoard(GameBoard *board);
 int autofill(ActionList *list);
 void exitCommand(ActionList *list);
-void hintCell(int x,int y);
+void hintCell(GameBoard *board,int x,int y);
 int numSolutions();
 void generateBoard(int x, int y);
 
