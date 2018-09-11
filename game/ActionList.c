@@ -10,6 +10,7 @@
 
 
 void freeList(ActionList *list);
+void cleanList(ActionList *list);
 void initList(ActionList *list);
 int undo(ActionList *list);
 int addNewNode(ActionList *list);
@@ -18,10 +19,28 @@ int clearTailOfList(ActionList *list);
 void copyBoard(GameBoard *oldBoard, GameBoard *newBoard);
 
 
-int TABLE_SIZE = 4;
-int BLOCK_SIZE_N = 2;
-int BLOCK_SIZE_M = 2;
+int TABLE_SIZE = 16;
+int BLOCK_SIZE_N = 4;
+int BLOCK_SIZE_M = 4;
 
+<<<<<<< HEAD
+=======
+int main(){
+	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList*));
+	initList(list);
+	setCell(3,0,0,list);
+	setCell(3,1,1,list);
+	undo(list);
+	redo(list);
+	undo(list);
+	undo(list);
+	undo(list);
+	freeList(list);
+
+	return 1;
+
+}
+>>>>>>> master
 
 
 
@@ -32,8 +51,10 @@ int undo(ActionList *list){
 		printf("Error: no moves to undo\n");
 		return 0;
 	}
-	printChanges(list->curr->prev->board,list->curr->board,"Undo");
-	list->curr = list->curr->prev;
+	list->curr=list->curr->prev;
+	printBoard(list->curr->board);
+	printChanges(list->curr->board,list->curr->next->board,"Undo");
+
 
 	return 0;
 }
@@ -44,6 +65,7 @@ int redo(ActionList *list){
 		return 0;
 	}
 	list->curr = list->curr->next;
+	printBoard(list->curr->board);
 	printChanges(list->curr->board,list->curr->prev->board,"Redo");
 	return 0;
 }
@@ -56,14 +78,14 @@ int printChanges(GameBoard *before, GameBoard *after, char *func){
 			val1=(before->board)[index];
 			val2=(after->board)[index];
 			if(val1!=val2){
-				if(val1==0){
-					printf("%s %d,%d, from '_' to %d\n",func, i+1,j+1,val2);
+				if(val2==0){
+					printf("%s %d,%d, from '_' to %d\n",func, i+1,j+1,val1);
 				}
-				if(val2==0)	{
-					printf("%s %d,%d, from %d to '_'\n",func, i+1,j+1,val1);
+				if(val1==0)	{
+					printf("%s %d,%d, from %d to '_'\n",func, i+1,j+1,val2);
 				}
 				if(val1!=0&&val2!=0){
-					printf("%s %d,%d, from %d to %d\n",func, i+1,j+1,val1,val2);
+					printf("%s %d,%d, from %d to %d\n",func, i+1,j+1,val2,val1);
 				}
 
 			}
@@ -150,7 +172,8 @@ void reset(ActionList *list){
 void initList(ActionList* list){
 	list->first = (Node*)calloc(1,sizeof(Node));
 	list->first->board = (GameBoard*)calloc(1,sizeof(GameBoard));
-	list->first->board->board = (int*)calloc(48,sizeof(int));
+	/*list->first->board->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));*/
+
 	/*printf("succesfuly allocated board \n");*/
 	list->curr=list->first;
 	list->curr->prev=0;
@@ -159,11 +182,17 @@ void initList(ActionList* list){
 
 }
 
-void freeList(ActionList *list){
+void cleanList(ActionList *list){ /*returnes initiated list*/
 	list->curr=list->first;
 	clearTailOfList(list);
 	free(list->curr->board->board);
 	free(list->curr->board);
+	list->first->board = (GameBoard*)calloc(1,sizeof(GameBoard));
+
+	}
+
+void freeList(ActionList *list){
+	cleanList(list);
 	free(list->curr);
 	free(list);
 }

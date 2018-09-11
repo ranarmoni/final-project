@@ -25,11 +25,60 @@ void deepCopy(GameBoard *to, GameBoard *from);
 void initBoard(GameBoard *board);
 int boardHasError(GameBoard *board);
 int hasError(GameBoard *board ,int x, int y);
+void loadBoard(ActionList *list);
+int saveBoard(ActionList *list);
+void markCellsAsFixed(GameBoard *board);
+int isLegalSet(GameBoard *board ,int z, int x, int y);
+int setCell(int z, int x, int y, ActionList *list);
 
 
 int startGame(){
 
 	return 1;
+}
+
+
+void loadBoard(ActionList *list){
+	cleanList(list);
+	if(address==""){
+		BLOCK_SIZE_N = 3;
+		BLOCK_SIZE_M = 3;
+		TABLE_SIZE = 9;
+		list->first->board->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
+		}
+	else{
+		loadFile(address, list->curr->board);
+		}
+}
+
+int saveBoard(ActionList *list){
+	if(gameMode==2){
+		if(boardHasError(list->curr->board)){
+			printf("Error: board contains erroneous values\n");
+			return 0;
+		}
+		if(!validateBoard(list->curr->board)){
+			printf("Error: board validation failed\n");
+			return 0;
+		}
+		markCellsAsFixed(list->curr->board);
+	}
+	if(!saveFile(address, list->curr->board)){
+		printf("Error: File cannot be created or modified\n");
+		return 0;
+	}
+	printf("Saved to: %s\n", address);
+	return 1;
+
+
+}
+
+void markCellsAsFixed(GameBoard *board){
+	int i;
+	for(i=0;i<TABLE_SIZE*TABLE_SIZE;i++){
+		if(board[i*3]!=0)
+			board[i*3+1]=1;
+	}
 }
 
 
@@ -93,17 +142,50 @@ int boardHasError(GameBoard *board){
 }
 
 
+int autofill(ActionList *list){
+	int i, val, possibleVal, writeVal, j;
+	GameBoard *newBoard = (GameBoard*)calloc(1,sizeof(GameBoard));
+	newBoard->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
+	addNewNode(list);
+	copyBoard(list->curr->board, newBoard);
+	for(i=0;i<BLOCK_SIZE_N;i++){
+		for(j=0;j<BLOCK_SIZE_M;j++){
+			if(list->curr->board[clacIndex(i,j,0,TABLE_SIZE,3)]==0){
+				writeVal=0;
+				for(val=0;val<TABLE_SIZE;val++){
+					if(isLegalSet(list->curr->board ,z, i, j)){
+						if(writeVal){
+							writeVal=0;
+							break;
+						}
+						else{
+							possibleVal=val;
+							writeVal=1;
+						}
+					}
+				}
+				if(writeVal)
+					newBoard->board[clacIndex(i,j,0,TABLE_SIZE,3)]=possibleVal;
+			}
+		}
+	}
+	list->curr->board=newBoard;
+	return 1;
+}
+
+
 int hasError(GameBoard *board ,int x, int y){
 	int i,j,currRow,currCol,z;
 	z=board->board[calcIndex(x,y,0,TABLE_SIZE,3)];
 
 
 	for(currRow=0;currRow<BLOCK_SIZE_M;++currRow) /*scan relevant column for collisions*/
-		if(z==board->board[calcIndex(currRow,y,0,TABLE_SIZE,3)])
+
+		if(z==board->board[calcIndex(currRow,y,0,TABLE_SIZE,3)]&&currRow!=x)
 			return 1;
 
 	for(currCol=0;currCol<BLOCK_SIZE_N;++currCol)/*scan relevant row for collisions*/
-			if(z==board->board[calcIndex(x,currCol,0,TABLE_SIZE,3)])
+			if(z==board->board[calcIndex(x,currCol,0,TABLE_SIZE,3)]&&currCol!=y)
 				return 1;
 
 
@@ -113,7 +195,7 @@ int hasError(GameBoard *board ,int x, int y){
 
 	for(i=0;i<BLOCK_SIZE_N;i++)/*scan relevant block for collisions, starting top left corner.*/
 		for(j=0;j<BLOCK_SIZE_M;j++)
-			if(z==board->board[calcIndex(currRow+i,currCol+j,0,TABLE_SIZE,3)])
+			if(z==board->board[calcIndex(currRow+i,currCol+j,0,TABLE_SIZE,3)]&&(i!=x || j!=y))
 				return 1;
 
 	return 0;
@@ -179,11 +261,21 @@ void hintCell(int x,int y){
 }
 */
 
-
+/*
+ * NEEDS TO RETURN INT (0=not valid, 1=valid)
 void validateBoard(){
-
+	GameBoard newSol, *temp;
+	 ********************************
+	deepCopy(&newSol, &board);
+	temp = hasSolution(&newSol);
+	if (temp != NULL){
+		solution = *temp;
+		printf("Validation passed: board is solvable\n");
+	}
+	else
+		printf("Validation failed: board is unsolvable\n");
 }
-
+*/
 /*
  * a.	Restart the game by calling startGame().
  */
@@ -196,6 +288,9 @@ void restartGame(){
  * close everything
  */
 void exitCommand(){
+void exitCommand(ActionList *list){
+	free(address);
+	freeList(list);
 	printf("Exiting...\n");
 	}
 
@@ -213,7 +308,7 @@ int show_errors(){
 
 void printSeperatingDashes(){
 	int i;
-	for(i=0;i<(4*(BLOCK_SIZE_N)+BLOCK_SIZE_M+1);i++)
+	for(i=0;i<(4*(BLOCK_SIZE_N*BLOCK_SIZE_M)+BLOCK_SIZE_M+1);i++)
 		printf("-");
 	printf("\n");
 }
@@ -234,17 +329,18 @@ void printBoard(GameBoard *board){
 		for(i=0; i<BLOCK_SIZE_M; i++){
 				printf("|");
 				for(j=0; j<BLOCK_SIZE_N; j++){
-
+					printf(" ");
+					if(board->board[calcIndex(x,y,0,TABLE_SIZE,3)]==0)
+						printf("  ");
+					else
+						printf("%2d",board->board[calcIndex(x,y,0,TABLE_SIZE,3)]);
 					if(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==1)
 						printf(".");
 					if(show_errors() && hasError(board,x,y))
 						printf("*");
 					else
 						printf(" ");
-					if(board->board[calcIndex(x,y,0,TABLE_SIZE,3)]==0)
-						printf(" ");
-					else
-						printf("%2d",board->board[calcIndex(x,y,1,TABLE_SIZE,3)]);
+
 					y++;
 				}
 							}
