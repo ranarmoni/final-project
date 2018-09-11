@@ -13,6 +13,7 @@
 extern int BLOCK_SIZE_N;
 extern int BLOCK_SIZE_M;
 extern int TABLE_SIZE; /* =N*M */
+extern int fullCells;
 extern char address[256];
 
 /*#include "parser.h"*/

@@ -10,6 +10,7 @@
 int BLOCK_SIZE_N;
 int BLOCK_SIZE_M;
 int TABLE_SIZE;
+int fullCells;
 int gameMode; /* 0=init, 1=solve, 2=edit */
 int markErrors; /*0=no, 1=yes*/
 

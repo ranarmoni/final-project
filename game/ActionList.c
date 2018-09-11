@@ -94,7 +94,7 @@ int printChanges(GameBoard *before, GameBoard *after, char *func){
 
 }
 
-
+/*
 void copyBoard(GameBoard *oldBoard, GameBoard *newBoard){
 	int i,j;
 	if(newBoard==0){
@@ -119,14 +119,14 @@ void copyBoard(GameBoard *oldBoard, GameBoard *newBoard){
 
 }
 
-
+*/
 int addNewNode(ActionList *list){
 
 	Node *newNode = (Node*)calloc(1,sizeof(Node));
 	newNode->board = (GameBoard*)calloc(1,sizeof(GameBoard));
 	newNode->board->board=(int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
 
-	copyBoard(list->curr->board, newNode->board);
+	memcpy((void*)newNode->board->board,(void*)list->curr->board->board,TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
 	clearTailOfList(list);
 	if(!newNode){
 			printf("allocation failed. bye!");
