@@ -6,6 +6,7 @@
 int BLOCK_SIZE_N;
 int BLOCK_SIZE_M;
 int TABLE_SIZE;
+int fullCells;
 
 int loadFile(char *filename, GameBoard *newBoard){
 	int n=0,m=0,val,i=0,*boardMatrix,fullCellsCount = 0;
@@ -43,6 +44,7 @@ int loadFile(char *filename, GameBoard *newBoard){
 		exit(0);
 	}
 	newBoard->board = boardMatrix;
+	fullCells = fullCellsCount;
 	return 1;
 }
 
