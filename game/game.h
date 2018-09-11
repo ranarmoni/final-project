@@ -19,7 +19,7 @@ extern char address[256];
 
 
 int gameMode; /* 0=init, 1=solve, 2=edit */
-int markErrors;
+int markErrors; /*0=no, 1=yes*/
 
 
 typedef struct gameBoardStruct{
