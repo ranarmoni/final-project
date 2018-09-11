@@ -96,7 +96,8 @@ int main(){
 				break;
 		}
 		free(command);
-		printf("free\n");
+
+		printf("\nfullCells: %d\n", fullCells);
 
 
 	}

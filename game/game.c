@@ -65,7 +65,8 @@ void loadBoard(ActionList *list){
 	else{
 		cleanList(list);
 		loadFile(address, list->curr->board);
-	}
+		}
+	printBoard(list->curr->board);
 }
 
 int saveBoard(ActionList *list){
@@ -85,6 +86,7 @@ int saveBoard(ActionList *list){
 		return 0;
 	}
 	printf("Saved to: %s\n", address);
+
 	return 1;
 
 
@@ -100,16 +102,18 @@ void markCellsAsFixed(GameBoard *board){
 
 
 int setCell(int z, int x, int y, ActionList *list){
-	addNewNode(list);
-
+	int currVal = list->curr->board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)];
 	if(isFixed(list->curr->board,x-1,y-1)){
-		printf("Error: cell is fixed\n");
-		return 0;
-	}
-
+			printf("Error: cell is fixed\n");
+			return 0;
+		}
+	if(z==0&&currVal!=0)
+		fullCells--;
+	if(z!=0&&currVal==0)
+		fullCells++;
+	addNewNode(list);
 	list->curr->board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)]=z;
 	markErrorsInBoard(list->curr->board);
-	fullCells++;
 	printBoard(list->curr->board);
 	if(fullCells==TABLE_SIZE*TABLE_SIZE){
 		if(boardHasError(list->curr->board)){
@@ -119,7 +123,7 @@ int setCell(int z, int x, int y, ActionList *list){
 		printf("Puzzle solved successfully\n");
 		gameMode=0;
 	}
-
+	printf("fullCells: %d", fullCells);
 	return 1;
 }
 
@@ -193,12 +197,15 @@ int autofill(ActionList *list){
 						}
 					}
 				}
-				if(writeVal)
+				if(writeVal){
 					newBoard->board[calcIndex(i,j,0,TABLE_SIZE,3)]=possibleVal;
+					fullCells++;
+				}
 			}
 		}
 	}
 	list->curr->board=newBoard;
+	printBoard(list->curr->board);
 	return 1;
 }
 
@@ -413,10 +420,12 @@ void printBoard(GameBoard *board){
 	printSeperatingDashes();
 }
 
-
+/*
 int isGameOver(){
 	return (fullCells == (BLOCK_SIZE_N+BLOCK_SIZE_M)*(BLOCK_SIZE_N+BLOCK_SIZE_M));
 }
+*/
+
 /* copy the content of two gameboards
  * if func=0,funtion doesnt print diffs.
  * if func=1, function prints diffs for the undo funtion.
