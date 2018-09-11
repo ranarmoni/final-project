@@ -254,12 +254,31 @@ int isError(GameBoard *board,int x, int y){
 	return (int)(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==2);
 }
 
-/*
+
 void hintCell(int x,int y){
-	int hint = solution.boardMatrix[x][y][0];
-	printf("Hint: set cell to %d \n",hint);
+	int hintVal, err;
+	GameBoard solution;
+	if(boardHasError(&board))
+		printf("Error: board contains erroneous values\n");
+	else if(board.board[calcIndex(x,y,1,TABLE_SIZE,3)]==1)
+		printf("Error: cell is fixed\n");
+	else if(board.board[calcIndex(x,y,0,TABLE_SIZE,3)]!=0)
+		printf("Error: cell already contains a value\n");
+	else{
+		solution.board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+		err = ILPsolve(&board, &solution);
+		if(err == -1){
+			printf("Gurobi has failed");
+			exit(0);
+		}
+		if(err == 0)
+			printf("Error: board is unsolvable\n");
+		else
+			printf("Hint: set cell to %d",board.board[calcIndex(x,y,0,TABLE_SIZE,3)]);
+		free(solution.board);
+	}
 }
-*/
+
 
 /*
  * NEEDS TO RETURN INT (0=not valid, 1=valid)

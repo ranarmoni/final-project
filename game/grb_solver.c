@@ -16,7 +16,7 @@ int BLOCK_SIZE_N;
 int BLOCK_SIZE_M;
 int TABLE_SIZE;
 
-int ILPsolve(GameBoard board, GameBoard solutionBoard){
+int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
 	GRBenv   *env   = NULL;
 	GRBmodel *model = NULL;
 	int i, j, v, block_i, block_j, count, optimstatus, ret,
@@ -37,7 +37,7 @@ int ILPsolve(GameBoard board, GameBoard solutionBoard){
 	for (i = 0; i < nm; i++) {
 	    for (j = 0; j < nm; j++) {
 	    	for (v = 0; v < nm; v++) {
-	    		if (board.board[calcIndex(i,j,0,nm,3)]-1 == v){
+	    		if (board->board[calcIndex(i,j,0,nm,3)]-1 == v){
 	    			initVals[calcIndex(i,j,v,nm,nm)] = 1.0;
 	    			printf("found %d in index %d,%d\n",v,i,j);
 	    		}
@@ -168,7 +168,7 @@ int ILPsolve(GameBoard board, GameBoard solutionBoard){
     	    for (j = 0; j < nm; j++) {
     	    	for (v = 0; v < nm; v++) {
     	    		if (sol[calcIndex(i,j,v,nm,nm)] == 1){
-    	    			solutionBoard.board[calcIndex(i,j,0,nm,3)] = v+1;
+    	    			solutionBoard->board[calcIndex(i,j,0,nm,3)] = v+1;
     	    			printf("%d in index %d,%d which is %d\n", v+1, i,j, calcIndex(i,j,0,nm,3));
     	    		}
     	    	}
