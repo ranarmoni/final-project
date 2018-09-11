@@ -17,9 +17,10 @@ int markErrors; /*0=no, 1=yes*/
 int main(){
 	/* do first */
 	int *command;
+	ActionList *list;
 	printf("Sudoku\n------\n");
 	gameMode = 0;
-	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList*));
+	list = (ActionList*)calloc(1,sizeof(ActionList*));
 	initList(list);
 
 	while(1){
@@ -51,7 +52,7 @@ int main(){
 				break;
 
 			case 6: /*validate*/
-				validateBoard();
+				validateBoard(list->curr->board);
 				break;
 
 			case 7: /*generate X Y*/
@@ -79,7 +80,7 @@ int main(){
 				break;
 
 			case 13: /*autofill*/
-				autoFill(list);
+				autofill(list);
 				break;
 
 			case 14: /*reset*/

@@ -6,6 +6,9 @@
 #include "parser.h"
 #include "ActionList.h"
 #include "MainAux.h"
+#include "fileIO.h"
+#include <string.h>
+
 
 
 GameBoard board;
@@ -30,6 +33,9 @@ int saveBoard(ActionList *list);
 void markCellsAsFixed(GameBoard *board);
 int isLegalSet(GameBoard *board ,int z, int x, int y);
 int setCell(int z, int x, int y, ActionList *list);
+int validateBoard(GameBoard *board);
+int autofill(ActionList *list);
+void exitCommand(ActionList *list);
 
 
 int startGame(){
@@ -40,7 +46,7 @@ int startGame(){
 
 void loadBoard(ActionList *list){
 	cleanList(list);
-	if(address==""){
+	if(strcmp(address,"")==0){
 		BLOCK_SIZE_N = 3;
 		BLOCK_SIZE_M = 3;
 		TABLE_SIZE = 9;
@@ -76,8 +82,8 @@ int saveBoard(ActionList *list){
 void markCellsAsFixed(GameBoard *board){
 	int i;
 	for(i=0;i<TABLE_SIZE*TABLE_SIZE;i++){
-		if(board[i*3]!=0)
-			board[i*3+1]=1;
+		if(board->board[i*3]!=0)
+			board->board[i*3+1]=1;
 	}
 }
 
@@ -150,10 +156,10 @@ int autofill(ActionList *list){
 	copyBoard(list->curr->board, newBoard);
 	for(i=0;i<BLOCK_SIZE_N;i++){
 		for(j=0;j<BLOCK_SIZE_M;j++){
-			if(list->curr->board[clacIndex(i,j,0,TABLE_SIZE,3)]==0){
+			if(list->curr->board->board[calcIndex(i,j,0,TABLE_SIZE,3)]==0){
 				writeVal=0;
 				for(val=0;val<TABLE_SIZE;val++){
-					if(isLegalSet(list->curr->board ,z, i, j)){
+					if(isLegalSet(list->curr->board ,val, i, j)){
 						if(writeVal){
 							writeVal=0;
 							break;
@@ -165,7 +171,7 @@ int autofill(ActionList *list){
 					}
 				}
 				if(writeVal)
-					newBoard->board[clacIndex(i,j,0,TABLE_SIZE,3)]=possibleVal;
+					newBoard->board[calcIndex(i,j,0,TABLE_SIZE,3)]=possibleVal;
 			}
 		}
 	}
@@ -261,35 +267,31 @@ void hintCell(int x,int y){
 }
 */
 
-/*
- * NEEDS TO RETURN INT (0=not valid, 1=valid)
-void validateBoard(){
+/* NEEDS TO RETURN INT (0=not valid, 1=valid)*/
+int validateBoard(GameBoard *board){
+	board=board;
+	/*
 	GameBoard newSol, *temp;
-	 ********************************
 	deepCopy(&newSol, &board);
 	temp = hasSolution(&newSol);
 	if (temp != NULL){
 		solution = *temp;
 		printf("Validation passed: board is solvable\n");
+		return 1;
 	}
 	else
 		printf("Validation failed: board is unsolvable\n");
+		*/
+		return 0;
 }
-*/
-/*
- * a.	Restart the game by calling startGame().
- */
-void restartGame(){
-	startGame();
-}
+
 
 /*
  * free space
  * close everything
  */
-void exitCommand(){
+
 void exitCommand(ActionList *list){
-	free(address);
 	freeList(list);
 	printf("Exiting...\n");
 	}
