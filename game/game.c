@@ -69,6 +69,7 @@ void loadBoard(ActionList *list){
 		cleanList(list);
 		loadFile(address, list->curr->board);
 	}
+	free(dummyboard.board);
 	printBoard(list->curr->board);
 }
 
