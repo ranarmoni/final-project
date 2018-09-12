@@ -146,11 +146,11 @@ int isLegalSet(GameBoard *board ,int z, int x, int y){
 
 
 	/* check again if rows/cols & x/y match */
-	currRow=x-(x%BLOCK_SIZE_N);
-	currCol=y-(y%BLOCK_SIZE_M);
+	currRow=x-(x%BLOCK_SIZE_M);
+	currCol=y-(y%BLOCK_SIZE_N);
 
-	for(i=0;i<BLOCK_SIZE_N;i++) /* scan relevant block for collisions, starting top left corner. */
-		for(j=0;j<BLOCK_SIZE_M;j++)
+	for(i=0;i<BLOCK_SIZE_M;i++) /* scan relevant block for collisions, starting top left corner. */
+		for(j=0;j<BLOCK_SIZE_N;j++)
 			if(z==board->board[calcIndex(currRow+i,currCol+j,0,TABLE_SIZE,3)])
 				return 0;
 
@@ -230,11 +230,11 @@ int markErrorsInCell(GameBoard *board ,int x, int y){
 			}
 
 	/* check again if rows/cols & x/y match */
-	currRow=x-(x%BLOCK_SIZE_N);
-	currCol=y-(y%BLOCK_SIZE_M);
+	currRow=x-(x%BLOCK_SIZE_M);
+	currCol=y-(y%BLOCK_SIZE_N);
 
-	for(i=0;i<BLOCK_SIZE_N;i++)/*scan relevant block for collisions, starting top left corner.*/
-		for(j=0;j<BLOCK_SIZE_M;j++)
+	for(i=0;i<BLOCK_SIZE_M;i++)/*scan relevant block for collisions, starting top left corner.*/
+		for(j=0;j<BLOCK_SIZE_N;j++)
 			if(z==board->board[calcIndex(currRow+i,currCol+j,0,TABLE_SIZE,3)]&&z!=0&&(currRow+i!=x || currCol+j!=y)){
 				board->board[calcIndex(currRow+i,currCol+j,2,TABLE_SIZE,3)]=1;
 				hasError=1;
@@ -391,7 +391,7 @@ void printBoard(GameBoard *board){
 
 	for(k=0; k<BLOCK_SIZE_N; k++){
 		printSeperatingDashes();
-		for(l=0; l<BLOCK_SIZE_N; l++){
+		for(l=0; l<BLOCK_SIZE_M; l++){
 		for(i=0; i<BLOCK_SIZE_M; i++){
 				printf("|");
 				for(j=0; j<BLOCK_SIZE_N; j++){
