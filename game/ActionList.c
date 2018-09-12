@@ -162,6 +162,7 @@ int clearTailOfList(ActionList *list){
 	free(currNode->board->board);
 	free(currNode->board);
 	free(currNode);
+	list->curr->next=NULL;
 	return 0;
 }
 
