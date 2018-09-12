@@ -74,7 +74,6 @@ int main(){
 				break;
 
 			case 11: /*hint X Y*/
-				printf("command recieved: %d, %d, %d",command[0],command[1],command[2]);
 				hintCell(list->curr->board, command[1],command[2]);
 				break;
 

@@ -476,13 +476,11 @@ int numSolutions(GameBoard *board){
 		printf("Error: board contains erroneous values\n");
 		return 0;
 	}
-	printf("in num sols\n");
 	solCount = countNumberOfSols(board);
-	printf("after sol count\n");
 	printf("Number of solutions: %d\n",solCount);
 	if(solCount == 1)
 		printf("This is a good board!\n");
-	else
+	else if (solCount > 1)
 		printf("The puzzle has more than 1 solution, try to edit it further\n");
 	return 1;
 
