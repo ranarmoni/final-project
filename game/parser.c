@@ -149,7 +149,6 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 		}
 		if(type==5 && ((command[i]>TABLE_SIZE || command[i]<1) || !isInt)){
 			if(i!=3 || command[i]<0){
-				printf("parameter %d is %d",i,command[i]);
 				printf("Error: value not in range 0-%d\n",TABLE_SIZE);
 				command[0] = -1;
 				return command;

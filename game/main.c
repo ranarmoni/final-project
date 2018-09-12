@@ -31,13 +31,19 @@ int main(){
 		switch(command[0]){
 
 			case 1: /*solve*/
-				loadBoard(list);
-				gameMode=1;
+				if(loadBoard(list)){
+					gameMode=1;
+					markErrorsInBoard(list->curr->board);
+					printBoard(list->curr->board);
+				}
 				break;
 
 			case 2: /*edit*/
-				loadBoard(list);
-				gameMode=2;
+				if(loadBoard(list)){
+					gameMode=2;
+					markErrorsInBoard(list->curr->board);
+					printBoard(list->curr->board);
+				}
 				break;
 
 			case 3: /*mark_errors X*/

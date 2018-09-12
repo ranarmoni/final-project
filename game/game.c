@@ -27,7 +27,7 @@ void deepCopy(GameBoard *to, GameBoard *from);
 void initBoard(GameBoard *board);
 int boardHasError(GameBoard *board);
 int hasError(GameBoard *board ,int x, int y);
-void loadBoard(ActionList *list);
+int loadBoard(ActionList *list);
 int saveBoard(ActionList *list);
 void markCellsAsFixed(GameBoard *board);
 int isLegalSet(GameBoard *board ,int z, int x, int y);
@@ -49,7 +49,7 @@ void setMarkErrors(int val){
 	markErrors=val;
 }
 
-void loadBoard(ActionList *list){
+int loadBoard(ActionList *list){
 	GameBoard dummyboard;
 	if(loadFile(address, &dummyboard)==0){
 		if(strcmp(address,"")==0){
@@ -62,7 +62,7 @@ void loadBoard(ActionList *list){
 		}
 		else{
 			printf("Error: File doesn't exist or cannot be opened\n");
-			return;
+			return 0;
 		}
 	}
 	else{
@@ -70,7 +70,7 @@ void loadBoard(ActionList *list){
 		loadFile(address, list->curr->board);
 	}
 	free(dummyboard.board);
-	printBoard(list->curr->board);
+	return 1;
 }
 
 int saveBoard(ActionList *list){
@@ -339,9 +339,10 @@ int validateBoard(GameBoard *board){
 		printf("Validation passed: board is solvable\n");
 		ret = 1;
 	}
-	else
+	else{
 		printf("Validation failed: board is unsolvable");
-	ret = 0;
+		ret = 0;
+	}
 	free(sol.board);
 	return ret;
 }

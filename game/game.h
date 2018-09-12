@@ -94,7 +94,7 @@ int isLegalSet(GameBoard *board ,int z, int x, int y);
 int getEmptyCells();
 
 
-void loadBoard(ActionList *list);
+int loadBoard(ActionList *list);
 int saveBoard(ActionList *list);
 int isLegalSet(GameBoard *board ,int z, int x, int y);
 int validateBoard(GameBoard *board);
@@ -104,5 +104,6 @@ void hintCell(GameBoard *board,int x,int y);
 int numSolutions(GameBoard *board);
 void generateBoard(GameBoard *board, int x, int y);
 void setMarkErrors(int val);
+int markErrorsInBoard(GameBoard *board);
 
 #endif /* GAME_H_ */
