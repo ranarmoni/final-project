@@ -477,6 +477,8 @@ int cellHaslegalValue(GameBoard *board, int x,int y){
 
 int numSolutions(GameBoard *board){
 	int solCount;
+
+	printf("in num sols\n");
 	if(boardHasError(board)){
 		printf("Error: board contains erroneous values\n");
 		return 0;
