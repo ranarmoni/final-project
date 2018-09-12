@@ -50,7 +50,8 @@ void setMarkErrors(int val){
 }
 
 void loadBoard(ActionList *list){
-	if(loadFile(address, list->curr->board)==0){
+	GameBoard dummyboard;
+	if(loadFile(address, &dummyboard)==0){
 		if(strcmp(address,"")==0){
 			cleanList(list);
 			BLOCK_SIZE_N = 3;
@@ -353,7 +354,6 @@ int validateBoard(GameBoard *board){
 void exitCommand(ActionList *list){
 	freeList(list);
 	printf("Exiting...\n");
-	exit(1);
 	}
 
 int show_errors(){

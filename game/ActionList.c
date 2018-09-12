@@ -174,6 +174,7 @@ void reset(ActionList *list){
 void initList(ActionList* list){
 	list->first = (Node*)calloc(1,sizeof(Node));
 	list->first->board = (GameBoard*)calloc(1,sizeof(GameBoard));
+	list->first->board->board = NULL;
 	/*list->first->board->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));*/
 
 	/*printf("succesfuly allocated board \n");*/
