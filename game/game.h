@@ -105,6 +105,8 @@ void exitCommand(ActionList *list);
 void hintCell(GameBoard *board,int x,int y);
 int numSolutions();
 void generateBoard(int x, int y);
+void setMarkErrors(int val);
+
 
 
 #endif /* GAME_H_ */

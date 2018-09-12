@@ -70,12 +70,12 @@ int redo(ActionList *list){
 
 int printChanges(GameBoard *before, GameBoard *after, char *func){
 	int i,j,val1,val2,index;
-	for(i=0;i<BLOCK_SIZE_N;i++){
-		for(j=0;j<BLOCK_SIZE_M;j++){
+	for(i=0;i<TABLE_SIZE;i++){
+		for(j=0;j<TABLE_SIZE;j++){
 			index=calcIndex(i,j,0,TABLE_SIZE,3);
 			val1=(before->board)[index];
 			val2=(after->board)[index];
-			printf("val 1:%d, val 2:%d \n", val1, val2);
+
 			if(val1!=val2){
 				if(val2==0){
 					printf("%s %d,%d, from _ to %d\n",func, i+1,j+1,val1);

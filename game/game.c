@@ -43,11 +43,9 @@ int markErrorsInCell(GameBoard *board ,int x, int y);
 
 
 
-int startGame(){
-
-	return 1;
+void setMarkErrors(int val){
+	markErrors=val;
 }
-
 
 void loadBoard(ActionList *list){
 	if(loadFile(address, list->curr->board)==0){
@@ -156,12 +154,6 @@ int isLegalSet(GameBoard *board ,int z, int x, int y){
 
 
 int boardHasError(GameBoard *board){
-	int i,j,N=BLOCK_SIZE_N*BLOCK_SIZE_M;
-	for(i=0;i<N;i++)
-		for(j=0;j<N;j++)
-			if(hasError(board,i,j))
-				return 1;
-	return 0;
 	return markErrorsInBoard(board);
 }
 
