@@ -190,6 +190,9 @@ void cleanList(ActionList *list){ /*returnes initiated list*/
 	free(list->curr->board->board);
 	free(list->curr->board);
 	list->first->board = (GameBoard*)calloc(1,sizeof(GameBoard));
+	list->first->next=NULL;
+	list->first->prev=NULL;
+
 
 	}
 
