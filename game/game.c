@@ -45,11 +45,9 @@ int cellHaslegalValue(GameBoard *board, int x,int y);
 
 
 
-int startGame(){
-
-	return 1;
+void setMarkErrors(int val){
+	markErrors=val;
 }
-
 
 void loadBoard(ActionList *list){
 	if(loadFile(address, list->curr->board)==0){
@@ -69,6 +67,7 @@ void loadBoard(ActionList *list){
 		cleanList(list);
 		loadFile(address, list->curr->board);
 	}
+		}
 	printBoard(list->curr->board);
 }
 
@@ -104,16 +103,18 @@ void markCellsAsFixed(GameBoard *board){
 
 
 int setCell(int z, int x, int y, ActionList *list){
-	addNewNode(list);
-
+	int currVal = list->curr->board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)];
 	if(isFixed(list->curr->board,x-1,y-1)){
-		printf("Error: cell is fixed\n");
-		return 0;
-	}
-
+			printf("Error: cell is fixed\n");
+			return 0;
+		}
+	if(z==0&&currVal!=0)
+		fullCells--;
+	if(z!=0&&currVal==0)
+		fullCells++;
+	addNewNode(list);
 	list->curr->board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)]=z;
 	markErrorsInBoard(list->curr->board);
-	fullCells++;
 	printBoard(list->curr->board);
 	if(fullCells==TABLE_SIZE*TABLE_SIZE){
 		if(boardHasError(list->curr->board)){
@@ -123,7 +124,7 @@ int setCell(int z, int x, int y, ActionList *list){
 		printf("Puzzle solved successfully\n");
 		gameMode=0;
 	}
-
+	printf("fullCells: %d", fullCells);
 	return 1;
 }
 
@@ -156,12 +157,6 @@ int isLegalSet(GameBoard *board ,int z, int x, int y){
 
 
 int boardHasError(GameBoard *board){
-	int i,j,N=BLOCK_SIZE_N*BLOCK_SIZE_M;
-	for(i=0;i<N;i++)
-		for(j=0;j<N;j++)
-			if(hasError(board,i,j))
-				return 1;
-	return 0;
 	return markErrorsInBoard(board);
 }
 
@@ -197,12 +192,15 @@ int autofill(ActionList *list){
 						}
 					}
 				}
-				if(writeVal)
+				if(writeVal){
 					newBoard->board[calcIndex(i,j,0,TABLE_SIZE,3)]=possibleVal;
+					fullCells++;
+				}
 			}
 		}
 	}
 	list->curr->board=newBoard;
+	printBoard(list->curr->board);
 	return 1;
 }
 
@@ -417,7 +415,7 @@ void printBoard(GameBoard *board){
 	printSeperatingDashes();
 }
 
-
+/*
 int isGameOver(){
 	return (fullCells == (BLOCK_SIZE_N+BLOCK_SIZE_M)*(BLOCK_SIZE_N+BLOCK_SIZE_M));
 }
@@ -471,6 +469,7 @@ int cellHaslegalValue(GameBoard *board, int x,int y){
 	}
 	return 0;
 }
+>>>>>>> ran
 
 /* copy the content of two gameboards
  * if func=0,funtion doesnt print diffs.

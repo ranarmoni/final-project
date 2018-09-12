@@ -22,6 +22,7 @@ void copyBoard(GameBoard *oldBoard, GameBoard *newBoard);
 int TABLE_SIZE;
 int BLOCK_SIZE_N;
 int BLOCK_SIZE_M;
+int fullCells;
 
 /*
 int main(){
@@ -53,7 +54,6 @@ int undo(ActionList *list){
 	printBoard(list->curr->board);
 	printChanges(list->curr->board,list->curr->next->board,"Undo");
 
-
 	return 0;
 }
 
@@ -71,22 +71,29 @@ int redo(ActionList *list){
 int printChanges(GameBoard *before, GameBoard *after, char *func){
 	int i,j,val1,val2,index;
 	for(i=0;i<BLOCK_SIZE_N;i++){
-		for(j=0;j<BLOCK_SIZE_M;j++){
+	for(i=0;i<TABLE_SIZE;i++){
+		for(j=0;j<TABLE_SIZE;j++){
 			index=calcIndex(i,j,0,TABLE_SIZE,3);
 			val1=(before->board)[index];
 			val2=(after->board)[index];
+
 			if(val1!=val2){
 				if(val2==0){
 					printf("%s %d,%d, from '_' to %d\n",func, i+1,j+1,val1);
+					printf("%s %d,%d, from _ to %d\n",func, i+1,j+1,val1);
+					fullCells++;
 				}
 				if(val1==0)	{
 					printf("%s %d,%d, from %d to '_'\n",func, i+1,j+1,val2);
+					printf("%s %d,%d, from %d to _\n",func, i+1,j+1,val2);
+					fullCells--;
 				}
 				if(val1!=0&&val2!=0){
 					printf("%s %d,%d, from %d to %d\n",func, i+1,j+1,val2,val1);
 				}
 
 			}
+
 
 		}
 	}
