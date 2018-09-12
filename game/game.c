@@ -66,11 +66,7 @@ void loadBoard(ActionList *list){
 	else{
 		cleanList(list);
 		loadFile(address, list->curr->board);
-<<<<<<< HEAD
 	}
-=======
-		}
->>>>>>> ran
 	printBoard(list->curr->board);
 }
 
@@ -421,11 +417,6 @@ void printBoard(GameBoard *board){
 	printSeperatingDashes();
 }
 
-/*
-int isGameOver(){
-	return (fullCells == (BLOCK_SIZE_N+BLOCK_SIZE_M)*(BLOCK_SIZE_N+BLOCK_SIZE_M));
-}
-<<<<<<< HEAD
 
 void generateBoard(GameBoard *board, int x, int y){
 	int i,j,err=0,randVal,randX,randY, *boardMat=(int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
@@ -476,20 +467,18 @@ int cellHaslegalValue(GameBoard *board, int x,int y){
 	}
 	return 0;
 }
-=======
-*/
->>>>>>> ran
 
 
 int numSolutions(GameBoard *board){
 	int solCount;
 
-	printf("in num sols\n");
 	if(boardHasError(board)){
 		printf("Error: board contains erroneous values\n");
 		return 0;
 	}
+	printf("in num sols\n");
 	solCount = countNumberOfSols(board);
+	printf("after sol count\n");
 	printf("Number of solutions: %d\n",solCount);
 	if(solCount == 1)
 		printf("This is a good board!\n");

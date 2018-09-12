@@ -79,7 +79,7 @@ int main(){
 				break;
 
 			case 12: /*num_solutions*/
-				numSolutions();
+				numSolutions(list->curr->board);
 				break;
 
 			case 13: /*autofill*/
@@ -96,11 +96,6 @@ int main(){
 				break;
 		}
 		free(command);
-<<<<<<< HEAD
-=======
-
-		printf("\nfullCells: %d\n", fullCells);
->>>>>>> ran
 
 
 	}
