@@ -174,11 +174,12 @@ int markErrorsInBoard(GameBoard *board){
 
 
 int autofill(ActionList *list){
-	int i, val, possibleVal, valCount, j;
+	int i, val, possibleVal, valCount, j, isChanged;
 	GameBoard *newBoard = (GameBoard*)calloc(1,sizeof(GameBoard));
 	newBoard->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
 	possibleVal=0;
-	addNewNode(list);
+	isChanged=0;
+
 	memcpy(newBoard->board,list->curr->board->board,TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
 	for(i=0;i<TABLE_SIZE;i++){
 		for(j=0;j<TABLE_SIZE;j++){
@@ -198,6 +199,7 @@ int autofill(ActionList *list){
 				if(valCount==1){
 					newBoard->board[calcIndex(i,j,0,TABLE_SIZE,3)]=possibleVal;
 					fullCells++;
+					isChanged=1;
 					printf("Cell <%d,%d> set to %d\n",i+1,j+1,possibleVal);
 				}
 			}
@@ -206,7 +208,11 @@ int autofill(ActionList *list){
 
 	}
 	/*list->curr->board=newBoard;*/
-	memcpy(list->curr->board->board,newBoard->board,TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
+	if(isChanged){
+		addNewNode(list);
+		memcpy(list->curr->board->board,newBoard->board,TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
+	}
+
 	printBoard(list->curr->board);
 	free(newBoard->board);
 	free(newBoard);
