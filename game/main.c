@@ -97,6 +97,5 @@ int main(){
 		free(command);
 
 	}
-	free(command);
 	return 1;
 }
