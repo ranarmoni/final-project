@@ -23,7 +23,6 @@ int main(){
 	gameMode = 0;
 	list = (ActionList*)calloc(1,sizeof(ActionList));
 	initList(list);
-
 	while(exitStatus==0){
 
 		command = readCommand();

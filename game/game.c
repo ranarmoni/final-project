@@ -66,10 +66,10 @@ int loadBoard(ActionList *list){
 		}
 	}
 	else{
+		free(dummyboard.board);
 		cleanList(list);
 		loadFile(address, list->curr->board);
 	}
-	free(dummyboard.board);
 	return 1;
 }
 
