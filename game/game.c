@@ -174,38 +174,42 @@ int markErrorsInBoard(GameBoard *board){
 
 
 int autofill(ActionList *list){
-	int i, val, possibleVal, writeVal, j;
+	int i, val, possibleVal, valCount, j;
 	GameBoard *newBoard = (GameBoard*)calloc(1,sizeof(GameBoard));
 	newBoard->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
+	possibleVal=0;
 	addNewNode(list);
 	memcpy(newBoard->board,list->curr->board->board,TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
 	for(i=0;i<TABLE_SIZE;i++){
 		for(j=0;j<TABLE_SIZE;j++){
 			if(list->curr->board->board[calcIndex(i,j,0,TABLE_SIZE,3)]==0){
-				writeVal=0;
-				for(val=0;val<TABLE_SIZE;val++){
+				valCount=0;
+				for(val=1;val<=TABLE_SIZE;val++){
 					if(isLegalSet(list->curr->board ,val, i, j)){
-						if(writeVal){
-							writeVal=0;
-							break;
-						}
+						if(valCount>0){
+							valCount++;
+							}
 						else{
 							possibleVal=val;
-							writeVal=1;
+							valCount++;
 						}
 					}
 				}
-				if(writeVal){
+				if(valCount==1){
 					newBoard->board[calcIndex(i,j,0,TABLE_SIZE,3)]=possibleVal;
 					fullCells++;
+					printf("Cell <%d,%d> set to %d\n",i+1,j+1,possibleVal);
 				}
 			}
+
 		}
+
 	}
-	list->curr->board=newBoard;
+	/*list->curr->board=newBoard;*/
+	memcpy(list->curr->board->board,newBoard->board,TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
 	printBoard(list->curr->board);
-	free(newBoard);
 	free(newBoard->board);
+	free(newBoard);
 	return 1;
 }
 
