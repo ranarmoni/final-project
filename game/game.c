@@ -179,8 +179,8 @@ int autofill(ActionList *list){
 	newBoard->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
 	addNewNode(list);
 	memcpy(newBoard->board,list->curr->board->board,TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
-	for(i=0;i<BLOCK_SIZE_N;i++){
-		for(j=0;j<BLOCK_SIZE_M;j++){
+	for(i=0;i<TABLE_SIZE;i++){
+		for(j=0;j<TABLE_SIZE;j++){
 			if(list->curr->board->board[calcIndex(i,j,0,TABLE_SIZE,3)]==0){
 				writeVal=0;
 				for(val=0;val<TABLE_SIZE;val++){
@@ -204,6 +204,8 @@ int autofill(ActionList *list){
 	}
 	list->curr->board=newBoard;
 	printBoard(list->curr->board);
+	free(newBoard);
+	free(newBoard->board);
 	return 1;
 }
 
