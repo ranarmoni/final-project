@@ -124,7 +124,7 @@ int setCell(int z, int x, int y, ActionList *list){
 		printf("Puzzle solved successfully\n");
 		gameMode=0;
 	}
-	printf("fullCells: %d", fullCells);
+
 	return 1;
 }
 
