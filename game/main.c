@@ -79,7 +79,7 @@ int main(){
 				break;
 
 			case 12: /*num_solutions*/
-				/*numSolutions();*/
+				numSolutions();
 				break;
 
 			case 13: /*autofill*/
