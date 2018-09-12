@@ -37,7 +37,7 @@ int autofill(ActionList *list);
 void exitCommand(ActionList *list);
 void hintCell(GameBoard *board, int x,int y);
 void generateBoard(GameBoard *board, int x, int y);
-int numSolutions();
+int numSolutions(GameBoard *board);
 int markErrorsInBoard(GameBoard *board);
 int markErrorsInCell(GameBoard *board ,int x, int y);
 int cellHaslegalValue(GameBoard *board, int x,int y);
@@ -327,20 +327,22 @@ void hintCell(GameBoard *board,int x,int y){
 
 /* NEEDS TO RETURN INT (0=not valid, 1=valid)*/
 int validateBoard(GameBoard *board){
-	board=board;
-	/*
-	GameBoard newSol, *temp;
-	deepCopy(&newSol, &board);
-	temp = hasSolution(&newSol);
-	if (temp != NULL){
-		solution = *temp;
+	GameBoard sol;
+	int ret;
+	sol.board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+	if(boardHasError(board)){
+		printf("Error: board contains erroneous values\n");
+		ret = 0;
+	}
+	else if (ILPsolve(board,&sol)){
 		printf("Validation passed: board is solvable\n");
-		return 1;
+		ret = 1;
 	}
 	else
-		printf("Validation failed: board is unsolvable\n");
-		*/
-		return 0;
+		printf("Validation failed: board is unsolvable");
+	ret = 0;
+	free(sol.board);
+	return ret;
 }
 
 
@@ -470,6 +472,23 @@ int cellHaslegalValue(GameBoard *board, int x,int y){
 			return 1;
 	}
 	return 0;
+}
+
+
+int numSolutions(GameBoard *board){
+	int solCount;
+	if(boardHasError(board)){
+		printf("Error: board contains erroneous values\n");
+		return 0;
+	}
+	solCount = countNumberOfSols(board);
+	printf("Number of solutions: %d\n",solCount);
+	if(solCount == 1)
+		printf("This is a good board!\n");
+	else
+		printf("The puzzle has more than 1 solution, try to edit it further\n");
+	return 1;
+
 }
 
 /* copy the content of two gameboards
