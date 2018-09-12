@@ -96,7 +96,11 @@ int main(){
 				break;
 		}
 		free(command);
+<<<<<<< HEAD
+=======
+
 		printf("\nfullCells: %d\n", fullCells);
+>>>>>>> ran
 
 
 	}

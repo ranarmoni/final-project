@@ -66,8 +66,11 @@ void loadBoard(ActionList *list){
 	else{
 		cleanList(list);
 		loadFile(address, list->curr->board);
+<<<<<<< HEAD
 	}
+=======
 		}
+>>>>>>> ran
 	printBoard(list->curr->board);
 }
 
@@ -88,6 +91,7 @@ int saveBoard(ActionList *list){
 		return 0;
 	}
 	printf("Saved to: %s\n", address);
+
 	return 1;
 
 
@@ -419,6 +423,7 @@ void printBoard(GameBoard *board){
 int isGameOver(){
 	return (fullCells == (BLOCK_SIZE_N+BLOCK_SIZE_M)*(BLOCK_SIZE_N+BLOCK_SIZE_M));
 }
+<<<<<<< HEAD
 
 void generateBoard(GameBoard *board, int x, int y){
 	int i,j,err=0,randVal,randX,randY, *boardMat=(int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
@@ -469,6 +474,8 @@ int cellHaslegalValue(GameBoard *board, int x,int y){
 	}
 	return 0;
 }
+=======
+*/
 >>>>>>> ran
 
 /* copy the content of two gameboards
