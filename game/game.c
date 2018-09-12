@@ -32,7 +32,7 @@ int saveBoard(ActionList *list);
 void markCellsAsFixed(GameBoard *board);
 int isLegalSet(GameBoard *board ,int z, int x, int y);
 int setCell(int z, int x, int y, ActionList *list);
-int validateBoard(GameBoard *board);
+int validateBoard(GameBoard *board, int printStatus);
 int autofill(ActionList *list);
 void exitCommand(ActionList *list);
 void hintCell(GameBoard *board, int x,int y);
@@ -79,7 +79,7 @@ int saveBoard(ActionList *list){
 			printf("Error: board contains erroneous values\n");
 			return 0;
 		}
-		if(!validateBoard(list->curr->board)){
+		if(!validateBoard(list->curr->board,0)){
 			printf("Error: board validation failed\n");
 			return 0;
 		}
@@ -119,18 +119,24 @@ int setCell(int z, int x, int y, ActionList *list){
 	list->curr->board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)]=z;
 	markErrorsInBoard(list->curr->board);
 	printBoard(list->curr->board);
-	if(fullCells==TABLE_SIZE*TABLE_SIZE){
-		if(boardHasError(list->curr->board)){
-			printf("Puzzle solution erroneous\n");
-			return 1;
-		}
-		printf("Puzzle solved successfully\n");
-		gameMode=0;
-	}
+	if(isGameOver(list))
+		return 1;
 
 	return 1;
 }
 
+int isGameOver(GameBoard *board){
+	if(fullCells==TABLE_SIZE*TABLE_SIZE && gameMode==1){
+			if(boardHasError(board)){
+				printf("Puzzle solution erroneous\n");
+				return 1;
+			}
+			printf("Puzzle solved successfully\n");
+			gameMode=0;
+			return 0;
+		}
+	return 0;
+}
 
 int isLegalSet(GameBoard *board ,int z, int x, int y){
 	int i,j,currRow,currCol;
@@ -156,7 +162,6 @@ int isLegalSet(GameBoard *board ,int z, int x, int y){
 
 	return 1;
 }
-
 
 
 int boardHasError(GameBoard *board){
@@ -210,6 +215,7 @@ int autofill(ActionList *list){
 	printBoard(list->curr->board);
 	free(newBoard->board);
 	free(newBoard);
+	isGameOver(list->curr->board);
 	return 1;
 }
 
@@ -333,20 +339,23 @@ void hintCell(GameBoard *board,int x,int y){
 
 
 /* NEEDS TO RETURN INT (0=not valid, 1=valid)*/
-int validateBoard(GameBoard *board){
+int validateBoard(GameBoard *board, int printStatus){
 	GameBoard sol;
 	int ret;
 	sol.board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
 	if(boardHasError(board)){
-		printf("Error: board contains erroneous values\n");
+		if(printStatus)
+			printf("Error: board contains erroneous values\n");
 		ret = 0;
 	}
 	else if (ILPsolve(board,&sol)){
-		printf("Validation passed: board is solvable\n");
+		if(printStatus)
+			printf("Validation passed: board is solvable\n");
 		ret = 1;
 	}
 	else{
-		printf("Validation failed: board is unsolvable");
+		if(printStatus)
+			printf("Validation failed: board is unsolvable");
 		ret = 0;
 	}
 	free(sol.board);

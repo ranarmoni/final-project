@@ -58,7 +58,7 @@ int main(){
 				break;
 
 			case 6: /*validate*/
-				validateBoard(list->curr->board);
+				validateBoard(list->curr->board, 1);
 				break;
 
 			case 7: /*generate X Y*/
