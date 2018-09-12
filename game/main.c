@@ -31,7 +31,6 @@ int main(){
 		switch(command[0]){
 
 			case 1: /*solve*/
-				printf("in solve, address is %s\n",address);
 				loadBoard(list);
 				gameMode=1;
 				break;
@@ -58,6 +57,7 @@ int main(){
 				break;
 
 			case 7: /*generate X Y*/
+				addNewNode(list);
 				generateBoard(list->curr->board, command[1],command[2]);
 				break;
 
@@ -96,8 +96,7 @@ int main(){
 		}
 		free(command);
 
-
 	}
-
+	free(command);
 	return 1;
 }

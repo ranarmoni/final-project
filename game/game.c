@@ -56,6 +56,7 @@ void loadBoard(ActionList *list){
 			BLOCK_SIZE_N = 3;
 			BLOCK_SIZE_M = 3;
 			TABLE_SIZE = 9;
+			fullCells = 0;
 			list->first->board->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
 		}
 		else{
@@ -419,13 +420,14 @@ void printBoard(GameBoard *board){
 
 
 void generateBoard(GameBoard *board, int x, int y){
-	int i,j,err=0,randVal,randX,randY, *boardMat=(int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+	int i,j,err,randVal,randX,randY, *boardMat=board->board;
 	srand(time(NULL));
-
-	for(i=0;i<1000;i++){
+	for(i=0; i<1000; i++){
+		err = 0;
 		free(boardMat);
 		boardMat = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
-		for(j=0;j<x;j++){
+		board->board = boardMat;
+		for(j=0; j<x; j++){
 			randX = rand()%TABLE_SIZE;
 			randY = rand()%TABLE_SIZE;
 			if(cellHaslegalValue(board ,randX,randY)){
@@ -440,9 +442,8 @@ void generateBoard(GameBoard *board, int x, int y){
 			}
 		}
 		if(!err){
-			board->board = boardMat;
 			if(ILPsolve(board,board)==1){
-				for(j=0;j<y;j++){
+				for(j=0; j<(TABLE_SIZE*TABLE_SIZE-y); j++){
 					randX = rand()%TABLE_SIZE;
 					randY = rand()%TABLE_SIZE;
 					if(board->board[calcIndex(randX,randY,0,TABLE_SIZE,3)] != 0)
@@ -450,9 +451,10 @@ void generateBoard(GameBoard *board, int x, int y){
 					else
 						j--;
 				}
+				fullCells = y;
+				printBoard(board);
+				return;
 			}
-			printBoard(board);
-			return;
 		}
 	}
 	printf("Error: puzzle generator failed\n");
