@@ -1,0 +1,15 @@
+solve in
+set 3 1 2
+mark_errors 0
+print_board
+mark_errors 1
+print_board
+undo
+print_board
+redo
+undo
+hint 3 1
+set 3 1 5
+num_solutions
+reset
+exit

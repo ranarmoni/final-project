@@ -51,7 +51,7 @@ void setMarkErrors(int val){
 
 int loadBoard(ActionList *list){
 	GameBoard dummyboard;
-	if(loadFile(address, &dummyboard)==0){
+	if(loadFile(address, &dummyboard, 0)==0){
 		if(strcmp(address,"")==0){
 			cleanList(list);
 			BLOCK_SIZE_N = 3;
@@ -68,7 +68,7 @@ int loadBoard(ActionList *list){
 	else{
 		free(dummyboard.board);
 		cleanList(list);
-		loadFile(address, list->curr->board);
+		loadFile(address, list->curr->board, gameMode==1);
 	}
 	return 1;
 }
@@ -115,7 +115,8 @@ int setCell(int z, int x, int y, ActionList *list){
 		fullCells--;
 	if(z!=0&&currVal==0)
 		fullCells++;
-	addNewNode(list);
+	if(list->curr->board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)] != z)
+		addNewNode(list);
 	list->curr->board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)]=z;
 	markErrorsInBoard(list->curr->board);
 	printBoard(list->curr->board);
@@ -205,7 +206,7 @@ int autofill(ActionList *list){
 					newBoard->board[calcIndex(i,j,0,TABLE_SIZE,3)]=possibleVal;
 					fullCells++;
 					isChanged=1;
-					printf("Cell <%d,%d> set to %d\n",i+1,j+1,possibleVal);
+					printf("Cell <%d,%d> set to %d\n",j+1,i+1,possibleVal);
 				}
 			}
 

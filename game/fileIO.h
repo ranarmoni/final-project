@@ -9,7 +9,7 @@
 #define FILEIO_H_
 
 
-int loadFile(char *filename, GameBoard *newBoard);
+int loadFile(char *filename, GameBoard *newBoard, int setFixed);
 int saveFile(char *filename, GameBoard *newBoard);
 
 

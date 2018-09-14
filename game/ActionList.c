@@ -78,15 +78,15 @@ int printChanges(GameBoard *before, GameBoard *after, char *func){
 
 			if(val1!=val2){
 				if(val2==0){
-					printf("%s %d,%d, from _ to %d\n",func, i+1,j+1,val1);
+					printf("%s %d,%d: from _ to %d\n",func,j+1,i+1,val1);
 					fullCells++;
 				}
 				if(val1==0)	{
-					printf("%s %d,%d, from %d to _\n",func, i+1,j+1,val2);
+					printf("%s %d,%d: from %d to _\n",func,j+1,i+1,val2);
 					fullCells--;
 				}
 				if(val1!=0&&val2!=0){
-					printf("%s %d,%d, from %d to %d\n",func, i+1,j+1,val2,val1);
+					printf("%s %d,%d: from %d to %d\n",func,j+1, i+1,val2,val1);
 				}
 
 			}
@@ -169,6 +169,7 @@ int clearTailOfList(ActionList *list){
 void reset(ActionList *list){
 	list->curr=list->first;
 	clearTailOfList(list);
+	printf("Board reset\n");
 }
 
 /*needs to pre allocate pointer*/

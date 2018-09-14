@@ -60,6 +60,8 @@ int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
 	}
 
 
+	error = GRBsetintparam(GRBgetenv(model), "OutputFlag", 0.0);
+
 	/* no empty cell constraint */
 
 	for (i = 0; i < nm; i++) {

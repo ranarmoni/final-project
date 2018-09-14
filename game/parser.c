@@ -49,8 +49,8 @@ int * readCommand(){
 		{15,0}
 	};
 	char commandNames[15][15] = {"solve","edit","mark_errors","print_board","set",
-			"validate","generate","undo","redo","save","hint","num_solutions","autofill","reset","exit"},
-			c;
+			"validate","generate","undo","redo","save","hint","num_solutions","autofill","reset","exit"};
+	char c;
 
 	/* check if calloc failed */
 	if(line == 0){
@@ -154,17 +154,15 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 				return command;
 			}
 		}
-		if(type==7){
-			if (fullCells!= 0){
-				printf("Error: board is not empty\n");
+		if(type==11 && ((command[i]>TABLE_SIZE || command[i]<1) || !isInt)){
+			printf("Error: value not in range 1-%d\n",TABLE_SIZE);
+			command[0] = -1;
+			return command;
+		}
+		if(type==7 && ((command[i]<0 || command[i]>(TABLE_SIZE*TABLE_SIZE-fullCells)) || !isInt)){
+				printf("Error: value not in range 0-%d\n",TABLE_SIZE*TABLE_SIZE);
 				command[0] = -1;
 				return command;
-			}
-			if (command[i]<0 || command[i]>(TABLE_SIZE*TABLE_SIZE-fullCells) ){
-				printf("Error: value not in range 0-%d\n",TABLE_SIZE*TABLE_SIZE-fullCells);
-				command[0] = -1;
-				return command;
-			}
 		}
 	}
 	return command;

@@ -54,7 +54,7 @@ int main(){
 				break;
 
 			case 5: /*set X Y Z*/
-				setCell(command[3], command[1], command[2], list);
+				setCell(command[3], command[2], command[1], list);
 				break;
 
 			case 6: /*validate*/
@@ -62,8 +62,12 @@ int main(){
 				break;
 
 			case 7: /*generate X Y*/
-				addNewNode(list);
-				generateBoard(list->curr->board, command[1],command[2]);
+				if (fullCells == 0){
+					addNewNode(list);
+					generateBoard(list->curr->board, command[1],command[2]);
+				}
+				else
+					printf("Error: board is not empty\n");
 				break;
 
 			case 8: /*undo*/
@@ -79,7 +83,7 @@ int main(){
 				break;
 
 			case 11: /*hint X Y*/
-				hintCell(list->curr->board, command[1],command[2]);
+				hintCell(list->curr->board, command[2],command[1]);
 				break;
 
 			case 12: /*num_solutions*/
