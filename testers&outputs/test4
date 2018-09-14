@@ -22,7 +22,6 @@ edit 2x4
 generate 2 62
 save m1
 solve m1
-set 4 4 4
 autofill
 
 mark_errors 1

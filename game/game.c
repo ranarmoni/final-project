@@ -23,7 +23,7 @@ void deepCopy(GameBoard *to, GameBoard *from);
 void initBoard(GameBoard *board);
 int markErrorsInBoard(GameBoard *board);
 int hasError(GameBoard *board ,int x, int y);
-int loadBoard(ActionList *list);
+int loadBoard(ActionList *list,int solveMode);
 int saveBoard(ActionList *list);
 void markCellsAsFixed(GameBoard *board);
 int isLegalSet(GameBoard *board ,int z, int x, int y);
@@ -50,6 +50,7 @@ void setMarkErrors(int val){
  * places the new board in the current node of the action list which is supplied as a parameter.
  *uses the loadFile function from IO module*/
 int loadBoard(ActionList *list){
+int loadBoard(ActionList *list, int solveMode){
 	GameBoard dummyboard;
 	if(loadFile(address, &dummyboard, 0)==0){
 		if(strcmp(address,"")==0){
@@ -61,14 +62,17 @@ int loadBoard(ActionList *list){
 			list->first->board->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
 		}
 		else{
-			printf("Error: File doesn't exist or cannot be opened\n");
+			if(solveMode)
+				printf("Error: File doesn't exist or cannot be opened\n");
+			else
+				printf("Error: File cannot be opened\n");
 			return 0;
 		}
 	}
 	else{
 		free(dummyboard.board);
 		cleanList(list);
-		loadFile(address, list->curr->board, gameMode==1);
+		loadFile(address, list->curr->board, solveMode);
 	}
 	return 1;
 }
@@ -133,7 +137,7 @@ int setCell(int z, int x, int y, ActionList *list){
 	list->curr->board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)]=z;
 	markErrorsInBoard(list->curr->board);
 	printBoard(list->curr->board);
-	if(isGameOver(list))
+	if(isGameOver(list->curr->board))
 		return 1;
 
 	return 1;
@@ -488,6 +492,8 @@ void generateBoard(GameBoard *board, int x, int y){
 			}
 		}
 	}
+	free(board->board);
+	board->board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
 	printf("Error: puzzle generator failed\n");
 }
 

@@ -30,7 +30,7 @@ int main(){
 		switch(command[0]){
 
 			case 1: /*solve*/
-				if(loadBoard(list)){
+				if(loadBoard(list,1)){
 					gameMode=1;
 					markErrorsInBoard(list->curr->board);
 					printBoard(list->curr->board);
@@ -38,7 +38,7 @@ int main(){
 				break;
 
 			case 2: /*edit*/
-				if(loadBoard(list)){
+				if(loadBoard(list,0)){
 					gameMode=2;
 					markErrorsInBoard(list->curr->board);
 					printBoard(list->curr->board);
@@ -63,7 +63,8 @@ int main(){
 
 			case 7: /*generate X Y*/
 				if (fullCells == 0){
-					addNewNode(list);
+					if(command[2] != 0)
+						addNewNode(list);
 					generateBoard(list->curr->board, command[1],command[2]);
 				}
 				else
