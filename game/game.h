@@ -94,7 +94,7 @@ int isLegalSet(GameBoard *board ,int z, int x, int y);
 int getEmptyCells();
 
 
-int loadBoard(ActionList *list);
+int loadBoard(ActionList *list,int solveMode);
 int saveBoard(ActionList *list);
 int isLegalSet(GameBoard *board ,int z, int x, int y);
 int validateBoard(GameBoard *board, int printStatus);

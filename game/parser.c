@@ -28,7 +28,7 @@ int checkInt(char*);
  */
 int * readCommand(){
 	char 	*line = (char*)calloc(258,sizeof(char)),
-			*token="", *delim = " \t\r\n",dummy[256];
+			*token="", *delim = " \t\r\n",dummy[258];
 	int i, errState = 0;
 	int *command;
 	int commands[15][2] = {
@@ -61,7 +61,7 @@ int * readCommand(){
 	while(!feof(stdin)){
 		printf("Enter your command:\n");
 		/* empty line */
-		if(fgets(line, 258, stdin)==NULL)
+		if(fgets(line, 256, stdin)==NULL)
 			break;
 		if (sscanf(line,"%s",dummy) <1){ /* stops on spaces as fgets keeps reading them */
 			continue;
