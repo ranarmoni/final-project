@@ -8,13 +8,13 @@
 #ifndef GAME_H_
 #define GAME_H_
 
+/*global game variables*/
 extern int BLOCK_SIZE_N;
 extern int BLOCK_SIZE_M;
 extern int TABLE_SIZE; /* =N*M */
 extern int fullCells;
 extern char address[256];
 
-/*#include "parser.h"*/
 
 
 int gameMode; /* 0=init, 1=solve, 2=edit */

@@ -12,20 +12,16 @@
 #include <time.h>
 
 
-ActionList actionList;
-int fixedAmnt;
+/*ActionList actionList; TBD*/
 int fullCells;
 
 /*
- * checks whether cell (x,y) is fixed.
+ * function declarations. see documentation in the code.
  */
 int isFixed(GameBoard *board,int x,int y);
-/*
- * creates a deep copy of the game board.
- */
 void deepCopy(GameBoard *to, GameBoard *from);
 void initBoard(GameBoard *board);
-int boardHasError(GameBoard *board);
+int markErrorsInBoard(GameBoard *board);
 int hasError(GameBoard *board ,int x, int y);
 int loadBoard(ActionList *list);
 int saveBoard(ActionList *list);
@@ -38,17 +34,21 @@ void exitCommand(ActionList *list);
 void hintCell(GameBoard *board, int x,int y);
 void generateBoard(GameBoard *board, int x, int y);
 int numSolutions(GameBoard *board);
-int markErrorsInBoard(GameBoard *board);
 int markErrorsInCell(GameBoard *board ,int x, int y);
 int cellHaslegalValue(GameBoard *board, int x,int y);
+int scanErrorsInCell(GameBoard *board ,int x, int y, int z, int markCells);
 
 
 
-
+/*set the markErrors field to 0 or 1*/
 void setMarkErrors(int val){
 	markErrors=val;
 }
 
+/*load board from file or generate an empty 9*9 board, according to input.
+ * file address taken from the "address" global field.
+ * places the new board in the current node of the action list which is supplied as a parameter.
+ *uses the loadFile function from IO module*/
 int loadBoard(ActionList *list){
 	GameBoard dummyboard;
 	if(loadFile(address, &dummyboard, 0)==0){
@@ -73,9 +73,14 @@ int loadBoard(ActionList *list){
 	return 1;
 }
 
+/*saves board to file.
+ *file address taken from the "address" global field.
+ *file the board is taken from the current node of the action list, which is supplied as a parameter.
+ *uses the saveFile function from IO module*/
+
 int saveBoard(ActionList *list){
 	if(gameMode==2){
-		if(boardHasError(list->curr->board)){
+		if(markErrorsInBoard(list->curr->board)){
 			printf("Error: board contains erroneous values\n");
 			return 0;
 		}
@@ -96,7 +101,9 @@ int saveBoard(ActionList *list){
 
 }
 
-void markCellsAsFixed(GameBoard *board){
+/*marks all cells as fixed, as needed before saving a file in edit mode.*/
+
+ void markCellsAsFixed(GameBoard *board){
 	int i;
 	for(i=0;i<TABLE_SIZE*TABLE_SIZE;i++){
 		if(board->board[i*3]!=0)
@@ -104,6 +111,12 @@ void markCellsAsFixed(GameBoard *board){
 	}
 }
 
+ /*set cell X,Y to Z
+  * Receives the list as parameter.
+  * changes the board in the "current" node of the list.
+  * adds a new node if a change is made.
+  * upon finishing, prints board and calls the isGameOver function that handles the game over scenario if needed.
+  */
 
 int setCell(int z, int x, int y, ActionList *list){
 	int currVal = list->curr->board->board[calcIndex(x-1,y-1,0,TABLE_SIZE,3)];
@@ -126,9 +139,13 @@ int setCell(int z, int x, int y, ActionList *list){
 	return 1;
 }
 
+/*
+ * checks if the game is over, prints relevant message, changes mode to "init" if finished properly.
+ */
+
 int isGameOver(GameBoard *board){
 	if(fullCells==TABLE_SIZE*TABLE_SIZE && gameMode==1){
-			if(boardHasError(board)){
+			if(markErrorsInBoard(board)){
 				printf("Puzzle solution erroneous\n");
 				return 1;
 			}
@@ -139,44 +156,6 @@ int isGameOver(GameBoard *board){
 	return 0;
 }
 
-int isLegalSet(GameBoard *board ,int z, int x, int y){
-	int i,j,currRow,currCol;
-
-
-	for(currRow=0;currRow<TABLE_SIZE;++currRow) /* scan relevant column for collisions */
-		if(z==board->board[calcIndex(currRow,y,0,TABLE_SIZE,3)])
-			return 0;
-
-	for(currCol=0;currCol<TABLE_SIZE;++currCol) /* scan relevant row for collisions */
-			if(z==board->board[calcIndex(x,currCol,0,TABLE_SIZE,3)])
-				return 0;
-
-
-	/* check again if rows/cols & x/y match */
-	currRow=x-(x%BLOCK_SIZE_M);
-	currCol=y-(y%BLOCK_SIZE_N);
-
-	for(i=0;i<BLOCK_SIZE_M;i++) /* scan relevant block for collisions, starting top left corner. */
-		for(j=0;j<BLOCK_SIZE_N;j++)
-			if(z==board->board[calcIndex(currRow+i,currCol+j,0,TABLE_SIZE,3)])
-				return 0;
-
-	return 1;
-}
-
-
-int boardHasError(GameBoard *board){
-	return markErrorsInBoard(board);
-}
-
-int markErrorsInBoard(GameBoard *board){
-	int i,j,hasErrors=0;
-	for(i=0;i<TABLE_SIZE;i++)
-		for(j=0;j<TABLE_SIZE;j++)
-			if(markErrorsInCell(board,i,j))
-				hasErrors=1;
-	return hasErrors;
-}
 
 
 int autofill(ActionList *list){
@@ -226,104 +205,117 @@ int autofill(ActionList *list){
 	return 1;
 }
 
+/*
+ * scans cell X,Y for errors.
+ * if parameter markCells==1, the errors found are marked. else, errors aren't marked.
+ * z parameter optional. if 0 - the current value in cell is checked.
+ * if z supplied - function checks whether z in cell x,y is legal.
+ */
 
+int scanErrorsInCell(GameBoard *board ,int x, int y, int z, int markCells){
+	int i,j,currRow,currCol, hasError=0;
 
-int markErrorsInCell(GameBoard *board ,int x, int y){
-	int i,j,currRow,currCol,z, hasError=0;
-	z=board->board[calcIndex(x,y,0,TABLE_SIZE,3)];
+	if(z==0)
+		z=board->board[calcIndex(x,y,0,TABLE_SIZE,3)];
 
 
 	for(currRow=0;currRow<BLOCK_SIZE_M;++currRow) /*scan relevant column for collisions*/
 
 		if(z==board->board[calcIndex(currRow,y,0,TABLE_SIZE,3)]&&currRow!=x&&z!=0){
-			board->board[calcIndex(currRow,y,2,TABLE_SIZE,3)]=1;
+			if(markCells)
+				board->board[calcIndex(currRow,y,2,TABLE_SIZE,3)]=1;
 			hasError=1;
 		}
 
 	for(currCol=0;currCol<BLOCK_SIZE_N;++currCol)/*scan relevant row for collisions*/
 		if(z==board->board[calcIndex(x,currCol,0,TABLE_SIZE,3)]&&currCol!=y&&z!=0){
-			board->board[calcIndex(x,currCol,2,TABLE_SIZE,3)]=1;
+			if(markCells)
+				board->board[calcIndex(x,currCol,2,TABLE_SIZE,3)]=1;
 			hasError=1;
 			}
 
-	/* check again if rows/cols & x/y match */
+
 	currRow=x-(x%BLOCK_SIZE_M);
 	currCol=y-(y%BLOCK_SIZE_N);
 
 	for(i=0;i<BLOCK_SIZE_M;i++)/*scan relevant block for collisions, starting top left corner.*/
 		for(j=0;j<BLOCK_SIZE_N;j++)
 			if(z==board->board[calcIndex(currRow+i,currCol+j,0,TABLE_SIZE,3)]&&z!=0&&(currRow+i!=x || currCol+j!=y)){
-				board->board[calcIndex(currRow+i,currCol+j,2,TABLE_SIZE,3)]=1;
+				if(markCells)
+					board->board[calcIndex(currRow+i,currCol+j,2,TABLE_SIZE,3)]=1;
 				hasError=1;
 			}
-	board->board[calcIndex(x,y,2,TABLE_SIZE,3)]=hasError;
+
+	if(markCells)
+		board->board[calcIndex(x,y,2,TABLE_SIZE,3)]=hasError;
 	return hasError;
 }
 
-int hasError(GameBoard *board ,int x, int y){
-	return markErrorsInCell(board,x,y);
+
+
+
+/*
+ * marks errors in cell x,y, and in other cells that "participate" in errors with x,y.
+ * uses scanErrorsInCell with z=0 (in order for current value to be checked) and markCells=1.
+ */
+
+int markErrorsInCell(GameBoard *board ,int x, int y){
+	return scanErrorsInCell(board,x,y,0,1);
 }
 
 
 
+/*
+ * checks whether z is a legal set to X,Y. returns 1 if legal, 0 otherwise.
+ * uses scanErrorsInCell with markCells=0 ("theoretical" errors doesn't need to be marked).
+ * used by the autofill method and backtracking module.
+ * a pointer to board is supplied as a parameter.
+ */
 
+int isLegalSet(GameBoard *board ,int z, int x, int y){
 
-/* this is the full version with marking errorous cells in memory
-int markErrors(GameBoard *board ,int z, int x, int y){
-	int i,j,currRow,currCol, error=0;
-
-	if(board->boardMatrix[x][y][1]==2){
-
-	}
-
-	for(currRow=0;currRow<BLOCK_SIZE_M;++currRow){ //scan relevant column for collisions
-		if(z==board->boardMatrix[currRow][y][0]){
-			if(board->boardMatrix[currRow][y][1]!=1)
-				board->boardMatrix[currRow][y][1]=2;
-		}
-		isError=1;
-	}
-
-
-	for(currCol=0;currCol<BLOCK_SIZE_N;++currCol){//scan relevant row for collisions
-			if(z==board->boardMatrix[x][currCol][0]){
-				if(z==board->boardMatrix[x][currCol][1]!=1)
-					board->boardMatrix[x][currCol][1]=2;
-			}
-		isError=1;
-	}
-
-	// check again if rows/cols & x/y match
-	currRow=x-(x%BLOCK_SIZE_N);
-	currCol=y-(y%BLOCK_SIZE_M);
-
-	for(i=0;i<BLOCK_SIZE_N;i++){ //scan relevant block for collisions, starting top left corner.
-		for(j=0;j<BLOCK_SIZE_M;j++){
-			if(z==board->boardMatrix[currRow+i][currCol+j][0])
-				if(board->boardMatrix[currRow+i][currCol+j][1]!=1)
-					board->boardMatrix[currRow+i][currCol+j][1]=2;
-		isError=1;
-		}
-	}
-
+	return scanErrorsInCell(board,x,y,z,0);
 
 }
 
-*/
+
+/*
+ * marks errors in the whole board by running markErrorsInCell on all the cells.
+ *returns 1 if board has errors, 0 otherwise.
+ */
+
+int markErrorsInBoard(GameBoard *board){
+	int i,j,hasErrors=0;
+	for(i=0;i<TABLE_SIZE;i++)
+		for(j=0;j<TABLE_SIZE;j++)
+			if(markErrorsInCell(board,i,j))
+				hasErrors=1;
+	return hasErrors;
+}
+
+
+
+/*returns 1 if a cell is marked as fixed, 0 otherwise*/
 
 int isFixed(GameBoard *board, int x, int y){
 	return (int)(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==1);
 }
 
+/*returns 1 if a cell is marked as error, 0 otherwise*/
+
 int isError(GameBoard *board,int x, int y){
 	return (int)(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==2);
 }
 
+/*
+ * provides a hint for cell X,Y by generating a solution using the gurobi solver.
+ * board pointer supplied as parameter.
+ */
 
 void hintCell(GameBoard *board,int x,int y){
 	int err;
 	GameBoard solution;
-	if(boardHasError(board))
+	if(markErrorsInBoard(board))
 		printf("Error: board contains erroneous values\n");
 	else if(board->board[calcIndex(x-1,y-1,1,TABLE_SIZE,3)]==1)
 		printf("Error: cell is fixed\n");
@@ -344,13 +336,18 @@ void hintCell(GameBoard *board,int x,int y){
 	}
 }
 
+/*
+ * checks whether the board is solvable by trying to solve it with the gurobi module.
+ * if printStatus==1, function print relevant messages (for the validate game call).
+ * else - function doesn't, happens when validate is used before save.
+ * board pointer supplied as parameter.
+ */
 
-/* NEEDS TO RETURN INT (0=not valid, 1=valid)*/
 int validateBoard(GameBoard *board, int printStatus){
 	GameBoard sol;
 	int ret;
 	sol.board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
-	if(boardHasError(board)){
+	if(markErrorsInBoard(board)){
 		if(printStatus)
 			printf("Error: board contains erroneous values\n");
 		ret = 0;
@@ -371,8 +368,7 @@ int validateBoard(GameBoard *board, int printStatus){
 
 
 /*
- * free space
- * close everything
+ * free list and print exit message.
  */
 
 void exitCommand(ActionList *list){
@@ -380,12 +376,7 @@ void exitCommand(ActionList *list){
 	printf("Exiting...\n");
 	}
 
-int show_errors(){
-	if(markErrors==0 && gameMode==1){
-		return 0;
-	}
-	return 1;
-}
+
 
 /*
  * PRIVATE METHOMDS FOLLOW
@@ -399,10 +390,21 @@ void printSeperatingDashes(){
 	printf("\n");
 }
 
+/*
+ * used by print, returns 0 if mode is solve and mark_errors is false, 1 otherwise.
+ */
+
+int show_errors(){
+	if(markErrors==0 && gameMode==1){
+		return 0;
+	}
+	return 1;
+}
+
 
 
 /*
- * print the game board
+ * print the game board according to instructions.
  */
 
 
@@ -442,6 +444,11 @@ void printBoard(GameBoard *board){
 	printSeperatingDashes();
 }
 
+/*
+ *generates board according to instructions:
+ *iterates 1000 times trying to randomly generate a valid board (checked by the gurobi mudule) with x numbers.
+ *if succeeded - cells are deleted until y random cells are left in board.
+ */
 
 void generateBoard(GameBoard *board, int x, int y){
 	int i,j,err,randVal,randX,randY, *boardMat=board->board;
@@ -484,6 +491,8 @@ void generateBoard(GameBoard *board, int x, int y){
 	printf("Error: puzzle generator failed\n");
 }
 
+/*returns 1 if a cell has a possible legal value using "isLegalSet", 0 otherwise.*/
+
 int cellHaslegalValue(GameBoard *board, int x,int y){
 	int i;
 
@@ -495,10 +504,12 @@ int cellHaslegalValue(GameBoard *board, int x,int y){
 }
 
 
-int numSolutions(GameBoard *board){
+/*counts possible solutions using the countNumberOfSols method from "solver" module*/
+
+ int numSolutions(GameBoard *board){
 	int solCount;
 
-	if(boardHasError(board)){
+	if(markErrorsInBoard(board)){
 		printf("Error: board contains erroneous values\n");
 		return 0;
 	}
@@ -511,43 +522,3 @@ int numSolutions(GameBoard *board){
 	return 1;
 
 }
-
-/* copy the content of two gameboards
- * if func=0,funtion doesnt print diffs.
- * if func=1, function prints diffs for the undo funtion.
- * if func=2 function prints diffs for the redo funtion.
- */
-
-/*
-void deepCopy(GameBoard *to, GameBoard *from, int func){
-	int i,j;
-	char *func_name;
-	if(print==1)
-		func_name="UNDO";
-	if(print==2)
-		func_name="REDO";
-
-	for (i=0; i<(BLOCK_SIZE_N+BLOCK_SIZE_M); ++i){
-		for (j=0; j<(BLOCK_SIZE_N+BLOCK_SIZE_M); ++j){
-			if(func !=0 && to->boardMatrix[i][j][0] != from->boardMatrix[i][j][0])
-				printf("%s %d,%d: from %d to %d\n", func_name, i,j, from->boardMatrix[i][j][0], to->boardMatrix[i][j][0])
-			to->boardMatrix[i][j][0] = from->boardMatrix[i][j][0];
-
-		}
-
-	}
-}
-
-*/
-/*
-void initBoard(GameBoard *board){
-	int i,j;
-
-	for(i=0; i<TABLE_SIZE; ++i)
-		for(j=0; j<TABLE_SIZE; ++j){
-			board->boardMatrix[i][j][0]=0;
-			board->boardMatrix[i][j][1]=0;
-		}
-}
-*/
-
