@@ -49,7 +49,7 @@ void setMarkErrors(int val){
  * file address taken from the "address" global field.
  * places the new board in the current node of the action list which is supplied as a parameter.
  *uses the loadFile function from IO module*/
-int loadBoard(ActionList *list){
+
 int loadBoard(ActionList *list, int solveMode){
 	GameBoard dummyboard;
 	if(loadFile(address, &dummyboard, 0)==0){
