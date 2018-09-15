@@ -1,8 +1,7 @@
 /*
- * parser.c
- *
- *  Created on: 17 May 2018
- *      Author: hp envy
+ * parser module takes care of parsing the user input and transforming it into arrays that hold all relevant command  information.
+ * read command function does initial parsing of the input, identifies the specific command type (or announces that input is invalid) than calls "readSpecificCommand" to finish the command parsing.
+ * the output is an array of 4 ints - first entry is the command number (same as in project guide), and following entries hold the rest of the relevant data (not all entries are always full) .
  */
 #include <stdio.h>
 #include "game.h"
@@ -24,7 +23,9 @@ int checkInt(char*);
 
 
 /*
- * read command from user and return an int array representation of it
+ * read command from user and return an int array representation of it.
+ * function runs in a loop and reads a line from stdin in each iteration.
+ * if the line is properly parsed and the head of the line matches one of the user commands, readSpecificCommand is called to parse the rest of the command.
  */
 int * readCommand(){
 	char 	*line = (char*)calloc(258,sizeof(char)),
@@ -97,7 +98,16 @@ int * readCommand(){
 	return command;
 }
 
+/*
+ * PRIVATE METHODS FOLLOW
+ */
 
+
+/*
+ * parses a specific command from user input and return an int array representation of it.
+ * function recieves function type, amount of variables, and delimiter chars from "readCommand"
+ * the function returns an array of 4 ints - first entry is the command number (same as in project guide), and following entries hold the rest of the data.
+ */
 int * readSpecificCommand(int type, int varAmnt , char *delim){
 	int i, isInt;
 	int *command = (int*)calloc(4,sizeof(int));
@@ -168,6 +178,10 @@ int * readSpecificCommand(int type, int varAmnt , char *delim){
 	return command;
 }
 
+
+/*
+ * checks if a token consists only of ints (=is an int itself).
+ */
 int checkInt(char* token){
 	int j = 0;
 	while(token[j] != '\0'){
@@ -178,16 +192,4 @@ int checkInt(char* token){
 	}
 	return 1;
 }
-
-/*
-int main(){
-	int *arr;
-	while(1){
-		arr = readCommand();
-		printf("[%d,%d,%d,%d]\n",arr[0],arr[1],arr[2],arr[3]);
-		printf("address: %s\n",address);
-	}
-	return 1;
-}
-*/
 

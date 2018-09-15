@@ -1,3 +1,9 @@
+/*
+ * this module contains the main function.
+ * further info in the function documentation.
+ */
+
+
 #include "game.h"
 #include "solver.h"
 #include "parser.h"
