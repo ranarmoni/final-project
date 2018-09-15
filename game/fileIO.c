@@ -35,7 +35,7 @@ int loadFile(char *filename, GameBoard *newBoard, int setFixed){
 			fullCellsCount++;
 		boardMatrix[i] = val;
 		c = fgetc(fptr);
-		if(!setFixed)
+		if(setFixed)
 			boardMatrix[i+1] = (c=='.');
 		i += 3;
 	}
