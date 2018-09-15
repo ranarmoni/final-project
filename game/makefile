@@ -3,10 +3,13 @@ OBJS = solver.o MainAux.o fileIO.o game.o ActionList.o grb_solver.o main.o parse
 COMP_FLAG = -ansi -O3 -Wall -Wextra -Werror -pedantic-errors
 GUROBI_COMP = -I/usr/local/lib/gurobi563/include
 GUROBI_LIB = -L/usr/local/lib/gurobi563/lib -lgurobi56
-EXEC = sudoku
+EXEC = sudoku-console
 
 $(EXEC): $(OBJS)
 	$(CC) $(OBJS) $(GUROBI_LIB) -o $@ -lm
+
+all: sudoku-console
+	
 
 grb_solver.o: grb_solver.c game.h MainAux.o 
 	$(CC) $(COMP_FLAGS) $(GUROBI_COMP) -c $*.c
