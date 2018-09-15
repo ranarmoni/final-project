@@ -554,7 +554,6 @@ void exitCommand(ActionList *list){
 	else if (solCount > 1)
 		printf("The puzzle has more than 1 solution, try to edit it further\n");
 	return 1;
-
 }
 
 

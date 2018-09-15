@@ -112,6 +112,11 @@ int addNewNode(ActionList *list){
 	newNode->board = (GameBoard*)calloc(1,sizeof(GameBoard));
 	newNode->board->board=(int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
 
+	if(!newNode || !newNode->board || !newNode->board->board){
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
+
 	memcpy((void*)newNode->board->board,(void*)list->curr->board->board,TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
 	clearTailOfList(list);
 	if(!newNode){
@@ -167,6 +172,12 @@ void reset(ActionList *list){
 void initList(ActionList* list){
 	list->first = (Node*)calloc(1,sizeof(Node));
 	list->first->board = (GameBoard*)calloc(1,sizeof(GameBoard));
+
+	if(!list->first->board || !list->first){
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
+
 	list->first->board->board = NULL;
 	list->curr=list->first;
 	list->curr->prev=NULL;
@@ -183,6 +194,12 @@ void cleanList(ActionList *list){
 	free(list->curr->board->board);
 	free(list->curr->board);
 	list->first->board = (GameBoard*)calloc(1,sizeof(GameBoard));
+
+	if(!list->first->board){
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
+
 	list->first->next=NULL;
 	list->first->prev=NULL;
 
