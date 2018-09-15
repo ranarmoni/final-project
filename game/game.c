@@ -166,6 +166,8 @@ void setMarkErrors(int val){
  *uses the loadFile function from IO module
  */
 
+ * places the new board in the current node of the action list which is supplied as a parameter.
+ *uses the loadFile function from IO module*/
 int loadBoard(ActionList *list, int solveMode){
 	GameBoard dummyboard;
 	if(loadFile(address, &dummyboard, 0)==0){
@@ -344,7 +346,7 @@ int scanErrorsInCell(GameBoard *board ,int x, int y, int z, int markCells){
 		z=board->board[calcIndex(x,y,0,TABLE_SIZE,3)];
 
 
-	for(currRow=0;currRow<BLOCK_SIZE_M;++currRow) /*scan relevant column for collisions*/
+	for(currRow=0;currRow<TABLE_SIZE;++currRow) /*scan relevant column for collisions*/
 
 		if(z==board->board[calcIndex(currRow,y,0,TABLE_SIZE,3)]&&currRow!=x&&z!=0){
 			if(markCells)
@@ -352,7 +354,7 @@ int scanErrorsInCell(GameBoard *board ,int x, int y, int z, int markCells){
 			hasError=1;
 		}
 
-	for(currCol=0;currCol<BLOCK_SIZE_N;++currCol)/*scan relevant row for collisions*/
+	for(currCol=0;currCol<TABLE_SIZE;++currCol)/*scan relevant row for collisions*/
 		if(z==board->board[calcIndex(x,currCol,0,TABLE_SIZE,3)]&&currCol!=y&&z!=0){
 			if(markCells)
 				board->board[calcIndex(x,currCol,2,TABLE_SIZE,3)]=1;
@@ -399,7 +401,7 @@ int markErrorsInCell(GameBoard *board ,int x, int y){
 
 int isLegalSet(GameBoard *board ,int z, int x, int y){
 
-	return scanErrorsInCell(board,x,y,z,0);
+	return !scanErrorsInCell(board,x,y,z,0);
 
 }
 

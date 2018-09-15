@@ -105,7 +105,10 @@ int main(){
 				break;
 
 			case 13: /*autofill*/
-				autofill(list);
+				if(!markErrorsInBoard(list->curr->board))
+					autofill(list);
+				else
+					printf("Error: board contains erroneous values\n");
 				break;
 
 			case 14: /*reset*/

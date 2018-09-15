@@ -28,8 +28,8 @@ int checkInt(char*);
  * if the line is properly parsed and the head of the line matches one of the user commands, readSpecificCommand is called to parse the rest of the command.
  */
 int * readCommand(){
-	char 	*line = (char*)calloc(258,sizeof(char)),
-			*token="", *delim = " \t\r\n",dummy[258];
+	char 	*line = (char*)calloc(260,sizeof(char)),
+			*token="", *delim = " \t\r\n",dummy[260];
 	int i, errState = 0;
 	int *command;
 	int commands[15][2] = {
@@ -60,9 +60,10 @@ int * readCommand(){
 	}
 
 	while(!feof(stdin)){
+		errState = 0;
 		printf("Enter your command:\n");
 		/* empty line */
-		if(fgets(line, 256, stdin)==NULL)
+		if(fgets(line, 258, stdin)==NULL)
 			break;
 		if (sscanf(line,"%s",dummy) <1){ /* stops on spaces as fgets keeps reading them */
 			continue;
