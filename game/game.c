@@ -16,6 +16,7 @@
 #include <string.h>
 #include "grb_solver.h"
 #include <time.h>
+#include <stdlib.h>
 
 
 int fullCells;
@@ -100,16 +101,18 @@ void generateBoard(GameBoard *board, int x, int y){
 	srand(time(NULL));
 	for(i=0; i<1000; i++){
 		err = 0;
+		/* Initialize a board from scratch */
 		free(boardMat);
 		boardMat = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
 		board->board = boardMat;
+		/* choose x cells at random and fill them with some legal value, if no legal value exists for a cell, repeat the process*/
 		for(j=0; j<x; j++){
 			randX = rand()%TABLE_SIZE;
 			randY = rand()%TABLE_SIZE;
 			if(cellHaslegalValue(board ,randX,randY)){
 				do{
 					randVal = (rand()%TABLE_SIZE)+1;
-				} while(!isLegalSet(board ,randX,randY,randVal));
+				} while(!isLegalSet(board ,randVal,randX,randY));
 				boardMat[calcIndex(randX,randY,0,TABLE_SIZE,3)] = randVal;
 			}
 			else{
@@ -118,6 +121,7 @@ void generateBoard(GameBoard *board, int x, int y){
 			}
 		}
 		if(!err){
+			/* if a legal placement was found, try and solve the board with ILP, if failed repeat the process */
 			if(ILPsolve(board,board)==1){
 				for(j=0; j<(TABLE_SIZE*TABLE_SIZE-y); j++){
 					randX = rand()%TABLE_SIZE;
@@ -135,6 +139,10 @@ void generateBoard(GameBoard *board, int x, int y){
 	}
 	free(board->board);
 	board->board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+	if(!board->board){
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
 	printf("Error: puzzle generator failed\n");
 }
 
@@ -146,7 +154,7 @@ int cellHaslegalValue(GameBoard *board, int x,int y){
 	int i;
 
 	for(i=1; i<=TABLE_SIZE; i++){
-		if(isLegalSet(board, x,y,i))
+		if(isLegalSet(board,i, x, y))
 			return 1;
 	}
 	return 0;
@@ -166,8 +174,8 @@ void setMarkErrors(int val){
  *uses the loadFile function from IO module
  */
 
- * places the new board in the current node of the action list which is supplied as a parameter.
- *uses the loadFile function from IO module*/
+ /* places the new board in the current node of the action list which is supplied as a parameter.
+ *uses the loadFile function from IO module */
 int loadBoard(ActionList *list, int solveMode){
 	GameBoard dummyboard;
 	if(loadFile(address, &dummyboard, 0)==0){
@@ -178,6 +186,11 @@ int loadBoard(ActionList *list, int solveMode){
 			TABLE_SIZE = 9;
 			fullCells = 0;
 			list->first->board->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
+			if(!list->first->board->board){
+				printf("Error: calloc has failed\n");
+				exit(0);
+			}
+
 		}
 		else{
 			if(solveMode)
@@ -291,6 +304,11 @@ int autofill(ActionList *list){
 	newBoard->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));
 	possibleVal=0;
 	isChanged=0;
+
+	if(!newBoard || !newBoard->board){
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
 
 	memcpy(newBoard->board,list->curr->board->board,TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
 	for(i=0;i<TABLE_SIZE;i++){
@@ -442,6 +460,7 @@ int isError(GameBoard *board,int x, int y){
 void hintCell(GameBoard *board,int x,int y){
 	int err;
 	GameBoard solution;
+
 	if(markErrorsInBoard(board))
 		printf("Error: board contains erroneous values\n");
 	else if(board->board[calcIndex(x-1,y-1,1,TABLE_SIZE,3)]==1)
@@ -450,6 +469,12 @@ void hintCell(GameBoard *board,int x,int y){
 		printf("Error: cell already contains a value\n");
 	else{
 		solution.board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+
+		if(!solution.board){
+			printf("Error: calloc has failed\n");
+			exit(0);
+		}
+
 		err = ILPsolve(board, &solution);
 		if(err == -1){
 			printf("Gurobi has failed\n");
@@ -474,6 +499,12 @@ int validateBoard(GameBoard *board, int printStatus){
 	GameBoard sol;
 	int ret;
 	sol.board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+
+	if(!sol.board){
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
+
 	if(markErrorsInBoard(board)){
 		if(printStatus)
 			printf("Error: board contains erroneous values\n");

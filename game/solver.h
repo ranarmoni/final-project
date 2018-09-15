@@ -1,31 +1,19 @@
 /*
- * solver.h
- *
- *  Created on: 17 May 2018
- *      Author: hp envy
+ * this module contains the exaustive backtracking solver.
+ * its only interface is the function countNumberOfSols, desctiption below
  */
 
 #ifndef SOLVER_H_
 #define SOLVER_H_
 
-#include "game.h"
-#include <stdlib.h>
-
 /*
- * seed to be set by main for randomization
+ * countNumberOfSols receives a single GameBoard type argument and counts
+ * the number of possible solutions for it.
+ * the function returns the number of possible solutions and prints this
+ *  number to stdout followed by suggestive prints to the user according to instructions
  */
-void setSeed(int seed);
-
-
 
 int countNumberOfSols(GameBoard *originalBoard);
-
-
-
-
-/*
- * PRIVATE METHOMDS FOLLOW
- */
 
 
 

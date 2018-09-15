@@ -8,7 +8,7 @@
 #include "solver.h"
 #include "parser.h"
 #include "ActionList.h"
-
+#include <stdlib.h>
 #include <stdio.h>
 
 #define true 1
@@ -35,6 +35,12 @@ int main(){
 	printf("Sudoku\n------\n");
 	gameMode = 0;
 	list = (ActionList*)calloc(1,sizeof(ActionList));
+
+	if(!list){
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
+
 	initList(list);
 	while(exitStatus==0){
 

@@ -19,7 +19,7 @@ void cleanList(ActionList *list);
 void initList(ActionList *list);
 int undo(ActionList *list);
 int addNewNode(ActionList *list);
-int printChanges(GameBoard *before, GameBoard *after, char *func);
+int trackChanges(GameBoard *before, GameBoard *after, char *func, int print);
 int clearTailOfList(ActionList *list);
 void copyBoard(GameBoard *oldBoard, GameBoard *newBoard);
 
@@ -41,7 +41,7 @@ int undo(ActionList *list){
 	}
 	list->curr=list->curr->prev;
 	printBoard(list->curr->board);
-	printChanges(list->curr->board,list->curr->next->board,"Undo");
+	trackChanges(list->curr->board,list->curr->next->board,"Undo", 1);
 
 	return 0;
 }
@@ -57,7 +57,7 @@ int redo(ActionList *list){
 	}
 	list->curr = list->curr->next;
 	printBoard(list->curr->board);
-	printChanges(list->curr->board,list->curr->prev->board,"Redo");
+	trackChanges(list->curr->board,list->curr->prev->board,"Redo",1);
 	return 0;
 }
 
@@ -66,7 +66,7 @@ int redo(ActionList *list){
  * receives the 2 board pointers and name of function (undo/redo) as parameters.
  */
 
-int printChanges(GameBoard *before, GameBoard *after, char *func){
+int trackChanges(GameBoard *before, GameBoard *after, char *func, int print){
 	int i,j,val1,val2,index;
 	for(i=0;i<TABLE_SIZE;i++){
 		for(j=0;j<TABLE_SIZE;j++){
@@ -76,15 +76,18 @@ int printChanges(GameBoard *before, GameBoard *after, char *func){
 
 			if(val1!=val2){
 				if(val2==0){
-					printf("%s %d,%d: from _ to %d\n",func,j+1,i+1,val1);
+					if(print)
+						printf("%s %d,%d: from _ to %d\n",func,j+1,i+1,val1);
 					fullCells++;
 				}
 				if(val1==0)	{
-					printf("%s %d,%d: from %d to _\n",func,j+1,i+1,val2);
+					if(print)
+						printf("%s %d,%d: from %d to _\n",func,j+1,i+1,val2);
 					fullCells--;
 				}
 				if(val1!=0&&val2!=0){
-					printf("%s %d,%d: from %d to %d\n",func,j+1, i+1,val2,val1);
+					if(print)
+						printf("%s %d,%d: from %d to %d\n",func,j+1, i+1,val2,val1);
 				}
 
 			}
@@ -152,6 +155,7 @@ int clearTailOfList(ActionList *list){
  * resets list by changing the curr pointer to the head of the list and cleaning the tail.
  */
 void reset(ActionList *list){
+	trackChanges(list->first->board,list->curr->board,"reset", 0);
 	list->curr=list->first;
 	clearTailOfList(list);
 	printf("Board reset\n");

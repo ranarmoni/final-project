@@ -54,7 +54,7 @@ int * readCommand(){
 	char c;
 
 	/* check if calloc failed */
-	if(line == 0){
+	if(!line){
 		printf("Error: calloc has failed\n");
 		exit(0);
 	}
@@ -65,7 +65,7 @@ int * readCommand(){
 		/* empty line */
 		if(fgets(line, 258, stdin)==NULL)
 			break;
-		if (sscanf(line,"%s",dummy) <1){ /* stops on spaces as fgets keeps reading them */
+		if (sscanf(line,"%s",dummy) <1){ /* splits on spaces as fgets keeps reading them */
 			continue;
 		}
 		if(strlen(line)>256){
@@ -94,6 +94,10 @@ int * readCommand(){
 	}
 	/* if EOF reached than output exit command */
 	command = (int*)calloc(4,sizeof(int));
+	if(!command){
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
 	command[0] = 15;
 	free(line);
 	return command;

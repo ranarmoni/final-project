@@ -1,8 +1,5 @@
 /*
- * grb_solver.c
- *
- *  Created on: 26 Aug. 2018
- *      Author: hp envy
+ * this module contains the ILPsolver.
  */
 
 #include "game.h"
@@ -12,10 +9,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+ * local reference to global vars
+ */
 int BLOCK_SIZE_N;
 int BLOCK_SIZE_M;
 int TABLE_SIZE;
 
+/*
+ * solve the board supplied by the argument board and outputs the solution in solutionBoard
+ * the function uses ILP (integer linear programming) with the gurobi module to solve the board
+ * to do that, 4 constraints are set:
+ *    all cells must be filled with some number
+ *    no number will repeat twice in a row
+ *    no number will repeat twice in a column
+ *    no number will repeat twice in a block
+ * the function returns 1 if a solution was found, 0 if none is found and -1 if a gurobi action has failed.
+ */
 int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
 	GRBenv   *env   = NULL;
 	GRBmodel *model = NULL;
@@ -46,24 +56,23 @@ int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
 	    	}
 	    }
 	}
-
+	/* activate the gurobi module */
 	error = GRBloadenv(&env, "sudoku.log");
 	if (error) {
 		printf("ERROR %d GRBloadenv(): %s\n", error, GRBgeterrormsg(env));
 		return -1;
 	}
-
+	/* create and initialise a new gurobi model */
 	error = GRBnewmodel(env, &model, "sudoku", nm*nm*nm, NULL, initVals, NULL, vtype, NULL);
 	if (error) {
 		printf("ERROR %d GRBnewmodel(): %s\n", error, GRBgeterrormsg(env));
 		return -1;
 	}
 
-
+	/* avoid printing the logs to stdout */
 	error = GRBsetintparam(GRBgetenv(model), "OutputFlag", 0.0);
 
 	/* no empty cell constraint */
-
 	for (i = 0; i < nm; i++) {
 	    for (j = 0; j < nm; j++) {
 	      for (v = 0; v < nm; v++) {
@@ -80,7 +89,6 @@ int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
 	}
 
 	/* row constraint */
-
 	for (v = 0; v < nm; v++) {
 	    for (j = 0; j < nm; j++) {
 	    	for (i = 0; i < nm; i++) {
@@ -97,7 +105,6 @@ int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
 	}
 
 	/* column constraint */
-
 	for (v = 0; v < nm; v++) {
 	    for (i = 0; i < nm; i++) {
 	    	for (j = 0; j < nm; j++) {
@@ -114,7 +121,6 @@ int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
 	}
 
 	/* block constraint */
-
 	for (v = 0; v < nm; v++) {
 	    for (block_i = 0; block_i < n; block_i++) {
 	    	for (block_j = 0; block_j < m; block_j++) {
@@ -136,7 +142,7 @@ int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
 	    }
 	}
 
-	/* Optimize model */
+	/* Optimize model - find a possible solution */
 	error = GRBoptimize(model);
 	  if (error) {
 		  printf("ERROR %d GRBoptimize(): %s\n", error, GRBgeterrormsg(env));
@@ -157,7 +163,7 @@ int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
 		  return -1;
 	  }
 
-    /* solution found */
+    /* check if solution found */
     if (optimstatus == GRB_OPTIMAL) {
         /* get the solution - the assignment to each variable */
         error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, nm*nm*nm, sol);
@@ -182,7 +188,6 @@ int ILPsolve(GameBoard *board, GameBoard *solutionBoard){
     	ret = 0;
     }
 
-    /* IMPORTANT !!! - Free model and environment */
     free(sol);
     free(ind);
     free(initVals);
