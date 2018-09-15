@@ -14,9 +14,16 @@ int fullCells;
 int gameMode; /* 0=init, 1=solve, 2=edit */
 int markErrors=1; /*0=no, 1=yes*/
 
+/*
+ * main function.
+ * first, ActionList is allocated and initiated.
+ * while loop functions as event loop - each iteration calls a command read from parser,
+ * and dispatches relevant command while supplying parameters received.
+ * exit commands triggers the end of the loop, and than "command" pointer is freed and application ends.
+ */
+
 
 int main(){
-	/* do first */
 	int *command,exitStatus = 0;
 	ActionList *list;
 	printf("Sudoku\n------\n");

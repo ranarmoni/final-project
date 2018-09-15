@@ -1,5 +1,11 @@
-/*#include "parser.h"
-*/
+/*
+ * contains all functions relevant to the game commands.
+ * unless stated otherwise, functions return 1 upon finishing successfully.
+ * detailed documentation follows.
+ */
+
+
+
 #include "game.h"
 #include <stdio.h>
 #include "solver.h"
@@ -12,7 +18,6 @@
 #include <time.h>
 
 
-/*ActionList actionList; TBD*/
 int fullCells;
 
 /*
@@ -37,18 +42,129 @@ int numSolutions(GameBoard *board);
 int markErrorsInCell(GameBoard *board ,int x, int y);
 int cellHaslegalValue(GameBoard *board, int x,int y);
 int scanErrorsInCell(GameBoard *board ,int x, int y, int z, int markCells);
+void printSeperatingDashes();
+int show_errors();
 
 
 
-/*set the markErrors field to 0 or 1*/
+/*
+ * print the game board according to instructions.
+ * gets board pointer as parameter.
+ */
+
+void printBoard(GameBoard *board){
+	int i, j, k, l, x=0, y=0;
+
+	for(k=0; k<BLOCK_SIZE_N; k++){
+		printSeperatingDashes();
+		for(l=0; l<BLOCK_SIZE_M; l++){
+		for(i=0; i<BLOCK_SIZE_M; i++){
+				printf("|");
+				for(j=0; j<BLOCK_SIZE_N; j++){
+					printf(" ");
+					if(board->board[calcIndex(x,y,0,TABLE_SIZE,3)]==0)
+						printf("   ");
+					else{
+						printf("%2d",board->board[calcIndex(x,y,0,TABLE_SIZE,3)]);
+						if(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==1)
+							printf(".");
+						else{
+							if(show_errors() && board->board[calcIndex(x,y,2,TABLE_SIZE,3)]==1)
+								printf("*");
+							else
+								printf(" ");
+					}
+					}
+
+
+					y++;
+				}
+							}
+		printf("|\n");
+		y=0;
+		x++;
+		}
+	}
+	printSeperatingDashes();
+}
+
+/*
+ *generates board according to instructions:
+ *iterates 1000 times trying to randomly generate a valid board (checked by the gurobi mudule) with x numbers.
+ *if succeeded - cells are deleted until y random cells are left in board.
+ *gets board pointer as parameter.
+ */
+
+void generateBoard(GameBoard *board, int x, int y){
+	int i,j,err,randVal,randX,randY, *boardMat=board->board;
+	srand(time(NULL));
+	for(i=0; i<1000; i++){
+		err = 0;
+		free(boardMat);
+		boardMat = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+		board->board = boardMat;
+		for(j=0; j<x; j++){
+			randX = rand()%TABLE_SIZE;
+			randY = rand()%TABLE_SIZE;
+			if(cellHaslegalValue(board ,randX,randY)){
+				do{
+					randVal = (rand()%TABLE_SIZE)+1;
+				} while(!isLegalSet(board ,randX,randY,randVal));
+				boardMat[calcIndex(randX,randY,0,TABLE_SIZE,3)] = randVal;
+			}
+			else{
+				err = 1;
+				break;
+			}
+		}
+		if(!err){
+			if(ILPsolve(board,board)==1){
+				for(j=0; j<(TABLE_SIZE*TABLE_SIZE-y); j++){
+					randX = rand()%TABLE_SIZE;
+					randY = rand()%TABLE_SIZE;
+					if(board->board[calcIndex(randX,randY,0,TABLE_SIZE,3)] != 0)
+						board->board[calcIndex(randX,randY,0,TABLE_SIZE,3)] = 0;
+					else
+						j--;
+				}
+				fullCells = y;
+				printBoard(board);
+				return;
+			}
+		}
+	}
+	free(board->board);
+	board->board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
+	printf("Error: puzzle generator failed\n");
+}
+
+/*returns 1 if cell x,y has a possible legal value using "isLegalSet", 0 otherwise.
+ * gets board pointer as parameter.
+ */
+
+int cellHaslegalValue(GameBoard *board, int x,int y){
+	int i;
+
+	for(i=1; i<=TABLE_SIZE; i++){
+		if(isLegalSet(board, x,y,i))
+			return 1;
+	}
+	return 0;
+}
+
+
+
+/*set the markErrors field to 0 or 1 (supplied as val)*/
 void setMarkErrors(int val){
 	markErrors=val;
 }
 
-/*load board from file or generate an empty 9*9 board, according to input.
+/*
+ * load board from file or generate an empty 9*9 board, according to input.
  * file address taken from the "address" global field.
- * places the new board in the current node of the action list which is supplied as a parameter.
- *uses the loadFile function from IO module*/
+ * cleans the action list (pointer supplied) and places the new board in the first node of the cleaned action list.
+ *uses the loadFile function from IO module
+ */
 
 int loadBoard(ActionList *list, int solveMode){
 	GameBoard dummyboard;
@@ -160,6 +276,11 @@ int isGameOver(GameBoard *board){
 	return 0;
 }
 
+/*
+ * gets list pointer as parameter. generates a copy of the current board, then scans cells for trivial fills.
+ * if found - they are written into the copy of the board and proper message is printed.
+ * after board is scanned fully - if any changes were made, a new node in the action list is created, and the new board is copied into it.
+ */
 
 
 int autofill(ActionList *list){
@@ -196,7 +317,7 @@ int autofill(ActionList *list){
 		}
 
 	}
-	/*list->curr->board=newBoard;*/
+
 	if(isChanged){
 		addNewNode(list);
 		memcpy(list->curr->board->board,newBoard->board,TABLE_SIZE*TABLE_SIZE*3*sizeof(int));
@@ -343,7 +464,7 @@ void hintCell(GameBoard *board,int x,int y){
 /*
  * checks whether the board is solvable by trying to solve it with the gurobi module.
  * if printStatus==1, function print relevant messages (for the validate game call).
- * else - function doesn't, happens when validate is used before save.
+ * else - function doesn't print, happens when validate is used before save.
  * board pointer supplied as parameter.
  */
 
@@ -382,132 +503,6 @@ void exitCommand(ActionList *list){
 
 
 
-/*
- * PRIVATE METHOMDS FOLLOW
- */
-
-
-void printSeperatingDashes(){
-	int i;
-	for(i=0;i<(4*(BLOCK_SIZE_N*BLOCK_SIZE_M)+BLOCK_SIZE_M+1);i++)
-		printf("-");
-	printf("\n");
-}
-
-/*
- * used by print, returns 0 if mode is solve and mark_errors is false, 1 otherwise.
- */
-
-int show_errors(){
-	if(markErrors==0 && gameMode==1){
-		return 0;
-	}
-	return 1;
-}
-
-
-
-/*
- * print the game board according to instructions.
- */
-
-
-void printBoard(GameBoard *board){
-	int i, j, k, l, x=0, y=0;
-
-	for(k=0; k<BLOCK_SIZE_N; k++){
-		printSeperatingDashes();
-		for(l=0; l<BLOCK_SIZE_M; l++){
-		for(i=0; i<BLOCK_SIZE_M; i++){
-				printf("|");
-				for(j=0; j<BLOCK_SIZE_N; j++){
-					printf(" ");
-					if(board->board[calcIndex(x,y,0,TABLE_SIZE,3)]==0)
-						printf("   ");
-					else{
-						printf("%2d",board->board[calcIndex(x,y,0,TABLE_SIZE,3)]);
-						if(board->board[calcIndex(x,y,1,TABLE_SIZE,3)]==1)
-							printf(".");
-						else{
-							if(show_errors() && board->board[calcIndex(x,y,2,TABLE_SIZE,3)]==1)
-								printf("*");
-							else
-								printf(" ");
-					}
-					}
-
-
-					y++;
-				}
-							}
-		printf("|\n");
-		y=0;
-		x++;
-		}
-	}
-	printSeperatingDashes();
-}
-
-/*
- *generates board according to instructions:
- *iterates 1000 times trying to randomly generate a valid board (checked by the gurobi mudule) with x numbers.
- *if succeeded - cells are deleted until y random cells are left in board.
- */
-
-void generateBoard(GameBoard *board, int x, int y){
-	int i,j,err,randVal,randX,randY, *boardMat=board->board;
-	srand(time(NULL));
-	for(i=0; i<1000; i++){
-		err = 0;
-		free(boardMat);
-		boardMat = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
-		board->board = boardMat;
-		for(j=0; j<x; j++){
-			randX = rand()%TABLE_SIZE;
-			randY = rand()%TABLE_SIZE;
-			if(cellHaslegalValue(board ,randX,randY)){
-				do{
-					randVal = (rand()%TABLE_SIZE)+1;
-				} while(!isLegalSet(board ,randX,randY,randVal));
-				boardMat[calcIndex(randX,randY,0,TABLE_SIZE,3)] = randVal;
-			}
-			else{
-				err = 1;
-				break;
-			}
-		}
-		if(!err){
-			if(ILPsolve(board,board)==1){
-				for(j=0; j<(TABLE_SIZE*TABLE_SIZE-y); j++){
-					randX = rand()%TABLE_SIZE;
-					randY = rand()%TABLE_SIZE;
-					if(board->board[calcIndex(randX,randY,0,TABLE_SIZE,3)] != 0)
-						board->board[calcIndex(randX,randY,0,TABLE_SIZE,3)] = 0;
-					else
-						j--;
-				}
-				fullCells = y;
-				printBoard(board);
-				return;
-			}
-		}
-	}
-	free(board->board);
-	board->board = (int*)calloc(TABLE_SIZE*TABLE_SIZE*3,sizeof(int));
-	printf("Error: puzzle generator failed\n");
-}
-
-/*returns 1 if a cell has a possible legal value using "isLegalSet", 0 otherwise.*/
-
-int cellHaslegalValue(GameBoard *board, int x,int y){
-	int i;
-
-	for(i=1; i<=TABLE_SIZE; i++){
-		if(isLegalSet(board, x,y,i))
-			return 1;
-	}
-	return 0;
-}
 
 
 /*counts possible solutions using the countNumberOfSols method from "solver" module*/
@@ -528,3 +523,30 @@ int cellHaslegalValue(GameBoard *board, int x,int y){
 	return 1;
 
 }
+
+
+/*
+ * PRIVATE METHOMDS FOLLOW
+ */
+
+/*prints a row of dashes, used by print method*/
+
+void printSeperatingDashes(){
+	int i;
+	for(i=0;i<(4*(BLOCK_SIZE_N*BLOCK_SIZE_M)+BLOCK_SIZE_M+1);i++)
+		printf("-");
+	printf("\n");
+}
+
+/*
+ * used by print, returns 0 if mode is solve and mark_errors is false, 1 otherwise.
+ */
+
+int show_errors(){
+	if(markErrors==0 && gameMode==1){
+		return 0;
+	}
+	return 1;
+}
+
+

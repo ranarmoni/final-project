@@ -1,3 +1,8 @@
+/*
+ * this module holds the actionList relevant functions. all functions receive a pointer to the action list,
+ * and returns 1 upon finishing successfully, unless states otherwise.
+ */
+
 
 
 #include "ActionList.h"
@@ -24,26 +29,10 @@ int BLOCK_SIZE_N;
 int BLOCK_SIZE_M;
 int fullCells;
 
+
 /*
-int main(){
-	ActionList *list = (ActionList*)calloc(1,sizeof(ActionList*));
-	initList(list);
-	setCell(3,0,0,list);
-	setCell(3,1,1,list);
-	undo(list);
-	redo(list);
-	undo(list);
-	undo(list);
-	undo(list);
-	freeList(list);
-
-	return 1;
-
-}
-
-*/
-
-/*real code from here*/
+ * undo last action. performed by moving the curr pointer back and printing the diffrences using "printChanges"
+ */
 
 int undo(ActionList *list){
 	if(list->curr->prev==0){
@@ -57,6 +46,10 @@ int undo(ActionList *list){
 	return 0;
 }
 
+/*
+ * redo last action. performed by moving the curr pointer forward and printing the diffrences using "printChanges"
+ */
+
 int redo(ActionList *list){
 	if(list->curr->next==0){
 		printf("Error: no moves to redo\n");
@@ -67,6 +60,11 @@ int redo(ActionList *list){
 	printChanges(list->curr->board,list->curr->prev->board,"Redo");
 	return 0;
 }
+
+/*
+ * prints changes between 2 boards - before and after a redo/undo call. used by redo and undo.
+ * receives the 2 board pointers and name of function (undo/redo) as parameters.
+ */
 
 int printChanges(GameBoard *before, GameBoard *after, char *func){
 	int i,j,val1,val2,index;
@@ -99,32 +97,12 @@ int printChanges(GameBoard *before, GameBoard *after, char *func){
 
 }
 
+
 /*
-void copyBoard(GameBoard *oldBoard, GameBoard *newBoard){
-	int i,j;
-	if(newBoard==0){
-		printf("allocation failed. bye!");
-		exit(0);
-	}
-	if(oldBoard==0){
-			printf("allocation failed. bye!");
-			exit(0);
-		}
-
-	for(i=0;i<BLOCK_SIZE_N;i++){
-		for(j=0;j<BLOCK_SIZE_M;j++){
-				(newBoard->board)[calcIndex(i,j,0,TABLE_SIZE,3)]=(oldBoard->board)[calcIndex(i,j,0,TABLE_SIZE,3)];
-				(newBoard->board)[calcIndex(i,j,1,TABLE_SIZE,3)]=(oldBoard->board)[calcIndex(i,j,1,TABLE_SIZE,3)];
-				(newBoard->board)[calcIndex(i,j,2,TABLE_SIZE,3)]=(oldBoard->board)[calcIndex(i,j,2,TABLE_SIZE,3)];
-
-			}
-
-	}
-
-
-}
-
-*/
+ * adds a new node to the list and copies the curr board into it.
+ * alters pointers accordingly.
+ * cleans tail of actionlist.
+ */
 int addNewNode(ActionList *list){
 
 	Node *newNode = (Node*)calloc(1,sizeof(Node));
@@ -144,6 +122,10 @@ int addNewNode(ActionList *list){
 
 	return 0;
 }
+
+/*
+ * clears tail of actionlist and frees memory.
+ */
 
 int clearTailOfList(ActionList *list){
 	Node *currNode,*next;
@@ -166,28 +148,32 @@ int clearTailOfList(ActionList *list){
 	return 0;
 }
 
+/*
+ * resets list by changing the curr pointer to the head of the list and cleaning the tail.
+ */
 void reset(ActionList *list){
 	list->curr=list->first;
 	clearTailOfList(list);
 	printf("Board reset\n");
 }
 
-/*needs to pre allocate pointer*/
+/*
+ * initiates list nodes and fields.
+ */
 void initList(ActionList* list){
 	list->first = (Node*)calloc(1,sizeof(Node));
 	list->first->board = (GameBoard*)calloc(1,sizeof(GameBoard));
 	list->first->board->board = NULL;
-	/*list->first->board->board = (int*)calloc(3*TABLE_SIZE*TABLE_SIZE,sizeof(int));*/
-
-	/*printf("succesfuly allocated board \n");*/
 	list->curr=list->first;
 	list->curr->prev=NULL;
 	list->curr->next=NULL;
-	/*printf("finished init \n");*/
 
 }
 
-void cleanList(ActionList *list){ /*returnes initiated list*/
+/*
+ *cleans the list and returnes an initiated empty list.
+ */
+void cleanList(ActionList *list){
 	list->curr=list->first;
 	clearTailOfList(list);
 	free(list->curr->board->board);
@@ -198,6 +184,10 @@ void cleanList(ActionList *list){ /*returnes initiated list*/
 
 
 	}
+
+/*
+ * frees all memory used by list.
+ */
 
 void freeList(ActionList *list){
 	cleanList(list);
