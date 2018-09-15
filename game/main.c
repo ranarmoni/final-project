@@ -18,7 +18,7 @@ int BLOCK_SIZE_M;
 int TABLE_SIZE;
 int fullCells;
 int gameMode; /* 0=init, 1=solve, 2=edit */
-int markErrors=1; /*0=no, 1=yes*/
+int markErrors=1; /*0=no, 1=yes. default is 1*/
 
 /*
  * main function.

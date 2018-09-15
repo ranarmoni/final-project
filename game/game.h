@@ -13,7 +13,7 @@ extern int BLOCK_SIZE_N;
 extern int BLOCK_SIZE_M;
 extern int TABLE_SIZE; /* =N*M */
 extern int fullCells;
-extern char address[256];
+extern char address[256]; /*designated space for file addresses*/
 
 int gameMode; /* 0=init, 1=solve, 2=edit */
 int markErrors; /*0=no, 1=yes*/
